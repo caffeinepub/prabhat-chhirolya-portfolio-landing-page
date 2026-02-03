@@ -1,0 +1,20 @@
+{
+  "backend/main.mo": "Motoko canister entry point that composes and exposes blob storage functionality by including the MixinStorage actor.",
+  "feature_evidence.json": "Feature evidence report documenting a UI fix for mode selector underline width on bold active text, with affected files, components, tests, and confidence.",
+  "frontend-file-summaries.txt": "Prewritten high-level summaries of frontend source files describing app structure, components, styling, and recent UI/UX changes.",
+  "frontend/index.css": "Tailwind-based global CSS defining design tokens, OKLCH color variables, light/dark themes, and base element styles.",
+  "frontend/index.html": "HTML entry document that sets metadata, page title, root mount node, and loads the React application.",
+  "frontend/src/App.tsx": "Root React component that manages the current mode state and wraps the app in a forced dark ThemeProvider.",
+  "frontend/src/components/InteractiveBackground.tsx": "Canvas-based interactive background component that renders a dense animated mesh reacting to mouse or touch input when visible.",
+  "frontend/src/components/PersonalModeContent.tsx": "Scrollable personal-mode page with background preloading, section fade-ins, expandable beliefs section, and a project carousel with hint animation.",
+  "frontend/src/components/ProfessionalModeContent.tsx": "Scrollable professional-mode page featuring animated timelines, work experience, tools and ecosystem sections, with background preloading and staged reveals.",
+  "frontend/src/components/ProjectCard.tsx": "Reusable interactive project card that opens a detailed overlay with image carousel, links, and optional YouTube embed.",
+  "frontend/src/hooks/useActor.ts": "React hook that creates and caches an ICP backend actor using react-query, switching between anonymous and authenticated actors based on Internet Identity. It invalidates and refetches all non-actor queries whenever the actor changes.",
+  "frontend/src/hooks/useInternetIdentity.ts": "Provides React context and hooks for managing Internet Identity authentication, including login, logout, persisted identity loading, and detailed login status flags. Wraps the app with an AuthClient-backed provider configured via runtime config.",
+  "frontend/src/hooks/useQueries.ts": "Placeholder react-query hook demonstrating how to run backend queries once an actor is available. Currently returns null and is disabled until the actor is ready.",
+  "frontend/src/index.css": "Global Tailwind CSS entry defining design tokens (OKLCH color variables), dark theme defaults, base styles, and custom micro-interactions and animations. Establishes the visual foundation for the entire app.",
+  "frontend/src/main.tsx": "Application entry point that renders the React app with React Query and Internet Identity providers. Initializes global query client and imports global styles.",
+  "frontend/src/pages/LandingPage.tsx": "Highly animated landing page component managing the initial, personal, and professional modes with complex transition state, media preloading, and audio feedback. Coordinates profile picture morphing, background behavior, and delayed content mounting.",
+  "frontend/tailwind.config.js": "Tailwind CSS configuration extending the theme with OKLCH-based color tokens, custom radii, shadows, and animations. Enables dark mode via class and registers typography, container queries, and animation plugins.",
+  "project_state.json": "Structured snapshot of the project’s current state, summarizing features, architecture, and scope across frontend animations and ICP backend capabilities. Used for planning, tracking, and versioning overall project progress."
+}

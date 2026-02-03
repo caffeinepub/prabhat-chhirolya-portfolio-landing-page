@@ -1,2 +1,3 @@
-# prabhat-chhirolya-portfolio-landing-page
-Exported from Caffeine project: Prabhat Chhirolya Portfolio Landing Page
+## 
+
+To run app build and run docker image: `docker build -t app . docker run -it --network host app`

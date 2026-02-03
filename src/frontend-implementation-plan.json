@@ -1,0 +1,24 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Fix mode selector active underline width clipping",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Ensure the PERSONAL/PROFESSIONAL selector underline/border spans the full bold text width in the active state, matching hover behavior without changing any existing transitions/animations.",
+      "acceptanceCriteria": [
+        "When PERSONAL is active, the border/underline spans the full width of the bold “PERSONAL” text with no clipping or shortfall.",
+        "When PROFESSIONAL is active, the border/underline spans the full width of the bold “PROFESSIONAL” text with no clipping or shortfall.",
+        "Hover behavior remains visually identical to current behavior (same animation/transition behavior and appearance).",
+        "No transition properties (durations/easings/delays) are modified for the mode selector elements."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/index.css",
+          "operation": "modify",
+          "description": "Apply the minimal CSS/class adjustments to the `.mode-selector` underline implementation so the underline/border sizing is based on the element’s current rendered text width (including bold glyph width) in the active/selected state, while keeping all existing transition/animation properties unchanged."
+        }
+      ]
+    }
+  ]
+}

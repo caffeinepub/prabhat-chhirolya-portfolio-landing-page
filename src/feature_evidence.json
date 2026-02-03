@@ -1,0 +1,24 @@
+{
+  "kind": "feature_evidence_report",
+  "features": [
+    {
+      "featureId": "feature-fix-the-personal-and-professional-mode-selector-text-link-styling-so-that-in-the-selected-active-state-when-the-label-becomes-bold-the-border-underline-correctly-spans-the-full-rendered-text-width-including-the-bolded-glyph-width-exactly-as-it-does-on-hover-without-changing-any-existing-transitions-timings-animations-or-overall-visual-design",
+      "featureTitle": "Fix the PERSONAL and PROFESSIONAL mode selector text-link styling so that in the selected/active state (when the label becomes bold), the border/underline correctly spans the full rendered text width (including the bolded glyph width) exactly as it does on hover, without changing any existing transitions, timings, animations, or overall visual design.",
+      "files": [
+        "frontend/src/index.css"
+      ],
+      "components": [
+        "blob-storage@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-1"
+      ],
+      "confidence": "high"
+    }
+  ]
+}
