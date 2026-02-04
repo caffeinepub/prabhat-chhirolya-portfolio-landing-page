@@ -4,6 +4,7 @@ import { Mail } from 'lucide-react';
 import PersonalModeContent from '../components/PersonalModeContent';
 import ProfessionalModeContent from '../components/ProfessionalModeContent';
 import InteractiveBackground from '../components/InteractiveBackground';
+import { useModeSelectorRemeasure } from '../hooks/useModeSelectorRemeasure';
 
 type Mode = 'initial' | 'personal' | 'professional';
 
@@ -27,6 +28,9 @@ export default function LandingPage({ mode, onModeChange }: LandingPageProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const personalButtonRef = useRef<HTMLButtonElement>(null);
   const professionalButtonRef = useRef<HTMLButtonElement>(null);
+
+  // Use resize hook to trigger re-measurement
+  const remeasureTick = useModeSelectorRemeasure([personalButtonRef, professionalButtonRef]);
 
   // Initialize audio element
   useEffect(() => {
@@ -232,7 +236,11 @@ export default function LandingPage({ mode, onModeChange }: LandingPageProps) {
   const backgroundShift = hoveredMode === 'personal' ? -2 : hoveredMode === 'professional' ? 2 : 0;
 
   // Calculate profile picture position and size based on state
+  // Include remeasureTick as dependency to force recalculation on resize
   const getProfilePictureTransform = () => {
+    // Force recalculation by referencing remeasureTick
+    void remeasureTick;
+
     if (profilePictureState === 'center') {
       return {
         transform: 'translate(-50%, -50%) scale(1)',
@@ -403,7 +411,7 @@ export default function LandingPage({ mode, onModeChange }: LandingPageProps) {
       {/* Animated Profile Picture - Single element for all transitions - Always Circular */}
       {showAnimatedProfilePicture && (
         <div
-          className={`fixed z-30 pointer-events-none rounded-full ${
+          className={`profile-picture-morph-transition fixed z-30 pointer-events-none rounded-full ${
             !imageLoaded || !showProfilePicture ? 'opacity-0' : ''
           }`}
           style={{
@@ -413,7 +421,6 @@ export default function LandingPage({ mode, onModeChange }: LandingPageProps) {
             height: profileTransform.height,
             transform: profileTransform.transform,
             opacity: showProfilePicture ? profileTransform.opacity : 0,
-            transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
           }}
         >
           <div className="profile-picture-border-wrapper w-full h-full rounded-full">

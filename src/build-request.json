@@ -1,36 +1,69 @@
 {
   "kind": "build_request",
-  "title": "Fix PERSONAL/PROFESSIONAL mode selector active border/underline width clipping",
-  "priority": "normal",
+  "title": "Fix OG/Twitter card image deployment: ensure /ogcard.jpg is present in asset canister root",
+  "priority": "high",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Fix the PERSONAL and PROFESSIONAL mode selector text-link styling so that in the selected/active state (when the label becomes bold), the border/underline correctly spans the full rendered text width (including the bolded glyph width) exactly as it does on hover, without changing any existing transitions, timings, animations, or overall visual design.",
+      "text": "Ensure the Open Graph / Twitter card image file is present in the deployed frontend asset canister at the public root path `/ogcard.jpg` (not only referenced in metadata), so OpenGraph/Twitter crawlers can fetch it directly.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-4"
+          "msg-1"
         ],
         "quotes": [
-          "On hover, the button/pill border expands correctly and wraps the full text. But on click / selected / active state, the border width is too small (it doesn’t cover the full bold word)"
+          "Right now, the file ogcard.jpg is missing from the deployed assets.",
+          "Please redeploy and make sure ogcard.jpg is correctly placed in the public root so all crawlers can access it."
         ]
       },
       "acceptanceCriteria": [
-        "When PERSONAL is active, the border/underline spans the full width of the bold “PERSONAL” text with no clipping or shortfall.",
-        "When PROFESSIONAL is active, the border/underline spans the full width of the bold “PROFESSIONAL” text with no clipping or shortfall.",
-        "Hover behavior remains visually identical to current behavior (same animation/transition behavior and appearance).",
-        "No transition properties (durations/easings/delays) are modified for the mode selector elements."
+        "The repository contains a root public asset at `frontend/public/ogcard.jpg`.",
+        "After deployment, requesting `https://www.prabhatchhirolya.com/ogcard.jpg` returns HTTP 200 with `content-type: image/jpeg`.",
+        "The returned image matches the intended OG dimensions (1200x630) and is not a 404/redirect-to-index response."
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "text": "Verify and, if needed, correct the IC asset deployment configuration so `ogcard.jpg` is included in the asset canister upload rules and is not ignored during build/deploy.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "It seems currently the OG/ Twitter card image was not deployed into the asset canister at the root path"
+        ]
+      },
+      "acceptanceCriteria": [
+        "`frontend/public/.ic-assets.json5` includes an explicit rule that does not ignore `ogcard.jpg`.",
+        "A fresh deploy results in `ogcard.jpg` appearing in the asset canister root (served at `/ogcard.jpg`)."
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "text": "Keep Open Graph and Twitter meta tags in `frontend/index.html` referencing the absolute URL `https://www.prabhatchhirolya.com/ogcard.jpg` and ensure the declared image type remains `image/jpeg`.",
+      "target": "frontend",
+      "source": {
+        "messageIds": [
+          "msg-1"
+        ],
+        "quotes": [
+          "so OpenGraph crawlers can’t fetch it"
+        ]
+      },
+      "acceptanceCriteria": [
+        "`frontend/index.html` contains `og:image`, `og:image:secure_url`, and `twitter:image` pointing to `https://www.prabhatchhirolya.com/ogcard.jpg`.",
+        "`frontend/index.html` contains `og:image:type` set to `image/jpeg`."
       ]
     }
   ],
   "constraints": [
-    "Do not modify or remove any existing transitions, animations, timings, or interaction design for the mode selector UI (PERSONAL/PROFESSIONAL).",
-    "Limit changes to the minimal CSS/class adjustments necessary to resolve the active-state sizing issue."
+    "Do not modify any files under the immutable frontend paths listed in SYSTEM_CONTEXT (e.g., `frontend/src/main.tsx`, `frontend/src/hooks/useInternetIdentity.ts`, `frontend/src/hooks/useActor.ts`, `frontend/src/components/ui`).",
+    "Backend must remain single-actor; do not introduce additional backend services."
   ],
   "nonGoals": [
-    "Redesigning the mode selector UI (colors, shapes, typography choices, hover effects).",
-    "Changing mode switching logic or any landing page transition behavior.",
-    "Addressing unrelated known issues (e.g., duplicated index.css tokens, InteractiveBackground distance=0 guard, Download CV stub)."
+    "Do not change the portfolio UI/UX beyond what is necessary to fix OG/Twitter image availability.",
+    "Do not introduce new social metadata fields beyond ensuring the existing OG/Twitter image is reachable."
   ],
   "imageRequirements": {
     "required": [],

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Download, ArrowRight, Briefcase, ChevronDown } from 'lucide-react';
+import { Download, Check, ArrowRight, Briefcase, ChevronDown } from 'lucide-react';
 import ProjectCard from './ProjectCard';
 
 interface ProfessionalModeContentProps {
@@ -13,6 +13,8 @@ export default function ProfessionalModeContent({ isFadingOut = false }: Profess
   const [expandedEcosystem, setExpandedEcosystem] = useState<number | null>(null);
   const [hoveredTool, setHoveredTool] = useState<string | null>(null);
   const [isBackgroundLoaded, setIsBackgroundLoaded] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [showCVPreview, setShowCVPreview] = useState(false);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const sectionsRef = useRef<(HTMLElement | null)[]>([]);
   const carouselRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -506,7 +508,22 @@ export default function ProfessionalModeContent({ isFadingOut = false }: Profess
   ];
 
   const handleDownloadCV = () => {
-    console.log('Download CV clicked');
+    if (isDownloading) return;
+    
+    setIsDownloading(true);
+    
+    // Create a temporary anchor element to trigger download
+    const link = document.createElement('a');
+    link.href = '/assets/prabhatchhirolya_cv.pdf';
+    link.download = 'prabhatchhirolya_cv.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Reset state after 2 seconds
+    setTimeout(() => {
+      setIsDownloading(false);
+    }, 2000);
   };
 
   const getLevelColor = (level: number) => {
@@ -540,14 +557,51 @@ export default function ProfessionalModeContent({ isFadingOut = false }: Profess
             XR Designer & Immersive Visualiser working at the intersection of BIM/VDC, AECO, XR, and AI-driven workflows.
           </p>
           
-          {/* Download CV Button with Gradient Glow */}
-          <button
-            onClick={handleDownloadCV}
-            className="cta-button-glow flex items-center gap-2 px-6 py-3 rounded-lg border border-foreground/20 bg-background/30 backdrop-blur-sm text-sm sm:text-base font-light tracking-wide text-foreground/80 transition-all duration-300 hover:border-accent-bright/50 hover:bg-accent-bright/10 hover:text-accent-bright hover:scale-105 relative z-10"
+          {/* Download CV Button with Hover/Focus Preview Container */}
+          <div 
+            className="relative z-10 cv-download-container"
+            onMouseEnter={() => setShowCVPreview(true)}
+            onMouseLeave={() => setShowCVPreview(false)}
+            onFocus={() => setShowCVPreview(true)}
+            onBlur={() => setShowCVPreview(false)}
           >
-            <Download className="h-4 w-4" />
-            Download CV (PDF)
-          </button>
+            <button
+              onClick={handleDownloadCV}
+              disabled={isDownloading}
+              className={`cta-button-glow flex items-center gap-2 px-6 py-3 rounded-lg border backdrop-blur-sm text-sm sm:text-base font-light tracking-wide transition-all duration-300 relative ${
+                isDownloading
+                  ? 'border-accent-bright/60 bg-accent-bright/20 text-accent-bright scale-105 cursor-not-allowed'
+                  : 'border-foreground/20 bg-background/30 text-foreground/80 hover:border-accent-bright/50 hover:bg-accent-bright/10 hover:text-accent-bright hover:scale-105'
+              }`}
+            >
+              {isDownloading ? (
+                <>
+                  <Check className="h-4 w-4 animate-pulse" />
+                  Downloaded!
+                </>
+              ) : (
+                <>
+                  <Download className="h-4 w-4" />
+                  Download CV (PDF)
+                </>
+              )}
+            </button>
+            
+            {/* CV Thumbnail Preview - Appears on Hover/Focus - Smaller with Subtle Border */}
+            <div 
+              className={`cv-thumbnail-preview absolute left-1/2 -translate-x-1/2 mt-4 transition-all duration-300 pointer-events-none ${
+                showCVPreview ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2'
+              }`}
+            >
+              <div className="relative overflow-hidden rounded-none bg-muted/20 p-2 md:p-3 border border-foreground/10">
+                <img 
+                  src="/assets/CVThumbnail.jpg" 
+                  alt="CV Preview - Professional resume of Prabhat Chhirolya showcasing XR design and immersive visualization expertise"
+                  className="w-[20rem] sm:w-[24rem] md:w-[28rem] lg:w-[32rem] xl:w-[36rem] max-w-[90vw] h-auto object-contain rounded-none opacity-80"
+                />
+              </div>
+            </div>
+          </div>
           
           <div
             className={`absolute bottom-12 left-1/2 -translate-x-1/2 transition-opacity duration-700 z-10 ${

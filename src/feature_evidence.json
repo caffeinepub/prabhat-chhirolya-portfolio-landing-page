@@ -2,10 +2,10 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-fix-the-personal-and-professional-mode-selector-text-link-styling-so-that-in-the-selected-active-state-when-the-label-becomes-bold-the-border-underline-correctly-spans-the-full-rendered-text-width-including-the-bolded-glyph-width-exactly-as-it-does-on-hover-without-changing-any-existing-transitions-timings-animations-or-overall-visual-design",
-      "featureTitle": "Fix the PERSONAL and PROFESSIONAL mode selector text-link styling so that in the selected/active state (when the label becomes bold), the border/underline correctly spans the full rendered text width (including the bolded glyph width) exactly as it does on hover, without changing any existing transitions, timings, animations, or overall visual design.",
+      "featureId": "feature-ensure-the-open-graph-twitter-card-image-file-is-present-in-the-deployed-frontend-asset-canister-at-the-public-root-path-ogcard-jpg-not-only-referenced-in-metadata-so-opengraph-twitter-crawlers-can-fetch-it-directly",
+      "featureTitle": "Ensure the Open Graph / Twitter card image file is present in the deployed frontend asset canister at the public root path `/ogcard.jpg` (not only referenced in metadata), so OpenGraph/Twitter crawlers can fetch it directly.",
       "files": [
-        "frontend/src/index.css"
+        "frontend/OG_PREVIEW_VERIFICATION.md"
       ],
       "components": [
         "blob-storage@4.0.0",
@@ -17,6 +17,44 @@
       ],
       "testIds": [
         "REQ-1"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-verify-and-if-needed-correct-the-ic-asset-deployment-configuration-so-ogcard-jpg-is-included-in-the-asset-canister-upload-rules-and-is-not-ignored-during-build-deploy",
+      "featureTitle": "Verify and, if needed, correct the IC asset deployment configuration so `ogcard.jpg` is included in the asset canister upload rules and is not ignored during build/deploy.",
+      "files": [
+        "frontend/public/.ic-assets.json5"
+      ],
+      "components": [
+        "blob-storage@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-2"
+      ],
+      "confidence": "high"
+    },
+    {
+      "featureId": "feature-keep-open-graph-and-twitter-meta-tags-in-frontend-index-html-referencing-the-absolute-url-https-www-prabhatchhirolya-com-ogcard-jpg-and-ensure-the-declared-image-type-remains-image-jpeg",
+      "featureTitle": "Keep Open Graph and Twitter meta tags in `frontend/index.html` referencing the absolute URL `https://www.prabhatchhirolya.com/ogcard.jpg` and ensure the declared image type remains `image/jpeg`.",
+      "files": [
+        "frontend/index.html"
+      ],
+      "components": [
+        "blob-storage@4.0.0",
+        "core-infrastructure@1.0.2",
+        "shadcn-ui@1.0.0",
+        "build-template-react@1.0.0",
+        "initial-app@1.0.0",
+        "github-export-icp-cli@1.0.0"
+      ],
+      "testIds": [
+        "REQ-3"
       ],
       "confidence": "high"
     }

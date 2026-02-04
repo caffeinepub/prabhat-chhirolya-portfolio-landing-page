@@ -1,22 +1,56 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Fix mode selector active underline width clipping",
+  "title": "Ensure ogcard.jpg is deployed at IC asset canister root for OG/Twitter crawlers",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Ensure the PERSONAL/PROFESSIONAL selector underline/border spans the full bold text width in the active state, matching hover behavior without changing any existing transitions/animations.",
+      "summary": "Add the OG/Twitter card image to the deployed frontend asset canister root as /ogcard.jpg so crawlers can fetch it directly.",
       "acceptanceCriteria": [
-        "When PERSONAL is active, the border/underline spans the full width of the bold “PERSONAL” text with no clipping or shortfall.",
-        "When PROFESSIONAL is active, the border/underline spans the full width of the bold “PROFESSIONAL” text with no clipping or shortfall.",
-        "Hover behavior remains visually identical to current behavior (same animation/transition behavior and appearance).",
-        "No transition properties (durations/easings/delays) are modified for the mode selector elements."
+        "The repository contains a root public asset at `frontend/public/ogcard.jpg`.",
+        "After deployment, requesting `https://www.prabhatchhirolya.com/ogcard.jpg` returns HTTP 200 with `content-type: image/jpeg`.",
+        "The returned image matches the intended OG dimensions (1200x630) and is not a 404/redirect-to-index response."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/index.css",
+          "path": "frontend/public/ogcard.jpg",
+          "operation": "create",
+          "description": "Add the OG/Twitter card JPEG at the public root so it is deployed and served at `/ogcard.jpg`. Ensure the file is the intended 1200x630 JPEG and matches the existing canonical OG image (e.g., the existing generated OG JPEG) without changing UI/UX."
+        },
+        {
+          "path": "frontend/OG_PREVIEW_VERIFICATION.md",
           "operation": "modify",
-          "description": "Apply the minimal CSS/class adjustments to the `.mode-selector` underline implementation so the underline/border sizing is based on the element’s current rendered text width (including bold glyph width) in the active/selected state, while keeping all existing transition/animation properties unchanged."
+          "description": "Update the deployment checklist/notes to explicitly confirm that `frontend/public/ogcard.jpg` is the source-of-truth asset deployed to `/ogcard.jpg`, and that it must be a 1200x630 JPEG returning `image/jpeg` (to prevent 404 or index.html fallback confusion)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Confirm IC asset upload rules include ogcard.jpg and do not ignore it during deploy.",
+      "acceptanceCriteria": [
+        "`frontend/public/.ic-assets.json5` includes an explicit rule that does not ignore `ogcard.jpg`.",
+        "A fresh deploy results in `ogcard.jpg` appearing in the asset canister root (served at `/ogcard.jpg`)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/public/.ic-assets.json5",
+          "operation": "modify",
+          "description": "Adjust/confirm asset canister rules so `ogcard.jpg` is explicitly included (not ignored) and, if supported by the config format, ensure headers are set/overridden so it is served as `image/jpeg` and not treated as a SPA fallback."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Keep OG/Twitter meta tags pointing to the absolute ogcard.jpg URL with image/jpeg type.",
+      "acceptanceCriteria": [
+        "`frontend/index.html` contains `og:image`, `og:image:secure_url`, and `twitter:image` pointing to `https://www.prabhatchhirolya.com/ogcard.jpg`.",
+        "`frontend/index.html` contains `og:image:type` set to `image/jpeg`."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/index.html",
+          "operation": "modify",
+          "description": "Verify and preserve existing Open Graph and Twitter meta tags so they continue to reference the absolute URL `https://www.prabhatchhirolya.com/ogcard.jpg`, and ensure `og:image:type` remains `image/jpeg`."
         }
       ]
     }

@@ -1,0 +1,130 @@
+# Open Graph / Twitter Card Preview Verification
+
+This document describes how to verify that social media previews (Open Graph cards) are working correctly for the portfolio site.
+
+## Production URLs to Test
+
+1. **Main site**: `https://www.prabhatchhirolya.com`
+2. **OG card image**: `https://www.prabhatchhirolya.com/ogcard.jpg`
+
+## Verification Steps
+
+### 1. Verify Image is Accessible
+
+Open `https://www.prabhatchhirolya.com/ogcard.jpg` in your browser:
+- ✅ Should return HTTP 200
+- ✅ Should display the OG card image (not a 404 page or HTML)
+- ✅ Should have `Content-Type: image/jpeg` header
+- ✅ Image should be 1200×630 pixels
+
+### 2. Test Social Media Previews
+
+#### OpenGraph.xyz Validator (PRIMARY VALIDATOR)
+1. Visit: https://www.opengraph.xyz/
+2. Enter: `https://www.prabhatchhirolya.com`
+3. Click "Submit" or press Enter
+4. Expected: Large image preview with title, description, and ogcard.jpg image (1200×630)
+5. Verify: "The OG Image URL appears to be valid and reachable" (no errors)
+
+**Note**: This validator is particularly strict about image accessibility and will report if the image URL is invalid or unreachable.
+
+#### X/Twitter Card Validator
+1. Visit: https://cards-dev.twitter.com/validator
+2. Enter: `https://www.prabhatchhirolya.com`
+3. Click "Preview card"
+4. Expected: Large image card with title, description, and ogcard.jpg image
+
+**Note**: If you see an old/cached preview, you may need to:
+- Clear the cache by adding a query parameter: `https://www.prabhatchhirolya.com?v=2`
+- Wait 24-48 hours for Twitter's cache to expire naturally
+- Use the validator multiple times to force a re-scrape
+
+#### Facebook/LinkedIn Debugger
+1. Visit: https://developers.facebook.com/tools/debug/
+2. Enter: `https://www.prabhatchhirolya.com`
+3. Click "Scrape Again" to force a fresh fetch
+4. Expected: Preview with ogcard.jpg image
+
+#### Manual Test
+1. Post the URL `https://www.prabhatchhirolya.com` on X/Twitter, Facebook, or LinkedIn
+2. Wait a few seconds for the preview to load
+3. Expected: Rich preview card with the OG image
+
+## Troubleshooting
+
+### "OG Image URL appears to be invalid or unreachable" Error
+
+This error from opengraph.xyz or other validators typically means:
+
+1. **File missing from public directory**: The `ogcard.jpg` file doesn't exist at `frontend/public/ogcard.jpg`
+   - **Fix**: Ensure the file `ogcard.jpg` (1200×630 JPEG) is physically present in `frontend/public/` directory
+   - **Source**: Copy from `assets/ogcard.jpg` or `assets/generated/ogcard.jpg.dim_1200x630.jpg`
+
+2. **Not deployed to asset canister**: The file wasn't included in the IC asset canister deployment
+   - **Fix**: Verify `.ic-assets.json5` includes the ogcard.jpg rule with `"ignore": false`
+   - **Fix**: Ensure the file is present before running `dfx deploy`
+
+3. **Content-Type issue**: The server is returning HTML instead of `image/jpeg`
+   - **Fix**: Add explicit `Content-Type: image/jpeg` header in `.ic-assets.json5`
+
+4. **Wrong path**: The file is in `assets/generated/` but not copied to the public root
+   - **Fix**: The file MUST be at `frontend/public/ogcard.jpg` (not just in assets folder)
+
+### Preview Not Showing
+- **Cache issue**: Social platforms cache previews for 24-48 hours. Use validator tools to force re-scrape.
+- **Image not accessible**: Verify `https://www.prabhatchhirolya.com/ogcard.jpg` returns 200 and displays correctly.
+- **Metadata missing**: Check that `index.html` contains all required OG and Twitter meta tags.
+- **File location**: Ensure `ogcard.jpg` exists at `frontend/public/ogcard.jpg` (not just in assets/generated/).
+
+### Old Preview Showing
+- Use the validator tools above to force a re-scrape
+- Add a query parameter to the URL when sharing: `?v=2`, `?v=3`, etc.
+- Wait for platform cache to expire (24-48 hours)
+
+## Required Metadata (Already Implemented)
+
+The following meta tags are configured in `frontend/index.html`:
+
+**Open Graph**:
+- `og:title`, `og:type`, `og:description`, `og:url`
+- `og:image`, `og:image:secure_url`
+- `og:image:type`, `og:image:width`, `og:image:height`, `og:image:alt`
+
+**Twitter Card**:
+- `twitter:card` (summary_large_image)
+- `twitter:title`, `twitter:description`
+- `twitter:image`, `twitter:image:alt`, `twitter:url`
+
+## Image Specifications
+
+The OG card image (`ogcard.jpg`) must meet these requirements:
+- **Recommended size**: 1200×630 pixels (1.91:1 aspect ratio)
+- **Format**: JPEG (preferred) or PNG
+- **Max file size**: < 5 MB (< 1 MB recommended)
+- **Min size**: 600×314 pixels
+- **Location**: `frontend/public/ogcard.jpg` (deployed to asset canister root)
+
+## Deployment Checklist
+
+**CRITICAL**: Before deploying, verify:
+- [ ] `frontend/public/ogcard.jpg` exists and is a valid 1200×630 JPEG file
+- [ ] The file is the correct JPEG (not PNG renamed to .jpg)
+- [ ] `.ic-assets.json5` includes `ogcard.jpg` with `"ignore": false` and explicit `Content-Type: image/jpeg` header
+- [ ] `.well-known/ic-domains` lists both `prabhatchhirolya.com` and `www.prabhatchhirolya.com`
+- [ ] `index.html` references `https://www.prabhatchhirolya.com/ogcard.jpg` (absolute URL)
+- [ ] After deployment, test `https://www.prabhatchhirolya.com/ogcard.jpg` directly in browser (should show image, not 404)
+- [ ] Run through opengraph.xyz validator to confirm image is reachable
+- [ ] Verify HTTP response headers include `Content-Type: image/jpeg`
+
+## File Source Mapping
+
+The OG card image should be sourced from:
+- **Primary source**: `assets/ogcard.jpg` (if it's already 1200×630 JPEG)
+- **Alternative source**: `assets/generated/ogcard.jpg.dim_1200x630.jpg` (pre-sized version)
+- **Deployment target**: `frontend/public/ogcard.jpg` (this is what gets deployed to the asset canister)
+
+**Important**: The file in `frontend/public/ogcard.jpg` is the source-of-truth for deployment. It must be physically present in that directory before running `dfx deploy` or the build process.
+
+---
+
+**Last updated**: February 4, 2026

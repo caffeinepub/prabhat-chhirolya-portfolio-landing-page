@@ -1,38 +1,49 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-03T12:42:37.497Z",
-  "summary": "The diff adds/adjusts CSS for the mode selector (inline-block + fit-content, absolute ::after underline spanning left/right, and a bold active class), but it does not show an active-state rule that forces the underline/border to be fully visible (scaleX(1)) when selected. There are also unrelated metadata/documentation updates not requested by the BuildRequest.",
+  "generatedAt": "2026-02-04T14:45:39.672Z",
+  "summary": "REQ-2 and REQ-3 appear implemented via updates to `frontend/public/.ic-assets.json5` and confirmation of OG/Twitter meta tags in `frontend/index.html`. REQ-1 is not evidenced in the diff because no `frontend/public/ogcard.jpg` asset file was added. The diff also includes extensive unrelated frontend UI/feature changes that were not requested and may violate the constraint to avoid modifying immutable frontend paths.",
   "missing_requirements": [
     {
       "id": "REQ-1",
-      "requirement": "Fix the PERSONAL and PROFESSIONAL mode selector text-link styling so that in the selected/active state (when the label becomes bold), the border/underline correctly spans the full rendered text width exactly as it does on hover, without changing any existing transitions/timings/animations/visual design.",
-      "reason": "The CSS shows the underline expanding on hover only (.mode-selector:hover::after { transform: scaleX(1); }), but there is no shown rule that expands the underline in the active/selected state (e.g., via .mode-selector-active::after or a parent active state). Without an active-state transform override, the underline remains scaleX(0) when selected, so the acceptance criteria for active underline spanning the full bold text width is not demonstrably implemented.",
+      "requirement": "Ensure the Open Graph / Twitter card image file is present in the deployed frontend asset canister at the public root path `/ogcard.jpg` (repository contains `frontend/public/ogcard.jpg`).",
+      "reason": "The diff shows no added file for `frontend/public/ogcard.jpg` (Added files: none). Without the actual JPEG in `frontend/public/`, the asset can’t be deployed/served from `/ogcard.jpg` even if metadata and asset rules exist.",
       "evidence": [
-        "frontend/src/index.css"
+        "File diff summary: ADDED FILES: none",
+        "frontend/public/.ic-assets.json5 (rule added for ogcard.jpg, but file itself not shown as added)"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Updated/rewrote project metadata/state description unrelated to the requested CSS fix.",
-      "reason": "BuildRequest scope is limited to minimal CSS/class adjustments for the mode selector underline clipping. Modifying project_state.json summary/existing_features is not part of the request.",
+      "description": "Large-scale UI/UX and behavior changes across the React frontend (landing page layout/animations, interactive background canvas system, mode selector remeasure hook, project card carousel/YouTube embeds, CV preview behavior, error boundary, global CSS overhaul).",
+      "reason": "BuildRequest is narrowly scoped to ensuring `/ogcard.jpg` is deployed/served and that existing OG/Twitter meta tags remain correct; it explicitly states to not change the portfolio UI/UX beyond what’s necessary.",
       "evidence": [
-        "project_state.json"
+        "frontend-file-summaries.txt (lists substantial modifications to App.tsx, LandingPage.tsx, index.css, multiple components, new hook, error boundary, etc.)"
       ]
     },
     {
-      "description": "Updated generated/summary documentation describing multiple unrelated UI/feature changes (InteractiveBackground integration, project card sizing, tools lists, etc.).",
-      "reason": "The BuildRequest is narrowly about the mode selector active underline width behavior; broad feature/documentation updates were not requested.",
+      "description": "Backend/data-layer scaffolding changes (placeholder React Query hooks file).",
+      "reason": "Not requested; BuildRequest focuses on static asset deployment for OG/Twitter image and maintaining meta tags.",
       "evidence": [
-        "frontend-file-summaries.txt"
+        "frontend-file-summaries.txt (mentions `frontend/src/hooks/useQueries.ts` placeholder React Query hooks)"
+      ]
+    },
+    {
+      "description": "Added OG preview verification documentation and updated project state metadata unrelated to deployment fix.",
+      "reason": "Documentation/project-state updates were not requested as part of the requirements (though not harmful, they are out of scope).",
+      "evidence": [
+        "frontend/OG_PREVIEW_VERIFICATION.md",
+        "project_state.json"
       ]
     }
   ],
-  "confidence": 0.68,
+  "confidence": 0.74,
   "changed_files": [
     "frontend-file-summaries.txt",
-    "frontend/src/index.css",
+    "frontend/OG_PREVIEW_VERIFICATION.md",
+    "frontend/index.html",
+    "frontend/public/.ic-assets.json5",
     "project_state.json"
   ]
 }

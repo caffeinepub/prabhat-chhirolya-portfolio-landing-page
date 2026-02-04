@@ -1,217 +1,489 @@
 {
   "schemaVersion": "1.0.0",
-  "projectStateVersion": 11,
-  "summary": "A dark-themed, highly animated React/Tailwind portfolio landing page for “Prabhat Chhirolya” with an interactive landing background and two content modes (Personal / Professional). The frontend includes rich scroll-triggered section animations, horizontal carousels, and modal project deep-dives (images + YouTube embeds), plus mode-specific social links. The codebase also includes an Internet Computer (ICP) backend Motoko canister providing a Caffeine/IC storage-operations mixin (gateway authorization refresh, dead-blob pruning confirmation + forced GC, blob liveness checks, and cycles refill/top-up plumbing), alongside a generalized build/deploy template and reusable frontend UI component scaffolding (shadcn-ui) for repeatable ICP app packaging.",
+  "projectStateVersion": 3,
+  "summary": "Prabhat Chhirolya Creative OS is a dark-themed, highly animated React + Tailwind single-page portfolio. It presents an immersive landing screen with an interactive cursor/touch-responsive background and a two-mode selector (Personal Journey / Professional Work). Each mode renders a long-form, internally scrollable narrative with scroll-triggered section reveals, horizontally scrollable project carousels, and reusable ProjectCard tiles that open modal overlays with rich details (text, optional image carousel, YouTube embeds, and external links). The repo also includes Internet Computer (ICP) scaffolding: Internet Identity authentication context, React Query–based backend actor creation/caching, and a Motoko blob-storage maintenance/admin mixin. SEO/social sharing is handled via canonical + Open Graph/Twitter meta tags in server-served index.html and a deployable ogcard.jpg asset with verification documentation.",
   "existing_features": [
     {
       "id": "IF-1",
-      "title": "Mode-based landing page (initial / personal / professional) with transitions",
+      "title": "Three-mode portfolio UX (initial / personal / professional) with coordinated transitions",
       "synonyms": [
-        "Mode selector navigation",
-        "Three-state landing flow"
+        "Mode-based portfolio",
+        "Personal/Professional mode switching"
       ],
-      "description": "Implements a landing experience with three modes. The top selector buttons switch between Personal and Professional content; returning home is done by clicking the name. Mode changes coordinate fade-out/fade-in, delayed content mounting, and animated layout changes.",
+      "description": "Implements a landing state plus two narrative modes. Mode changes coordinate fade-out/fade-in timing, delayed content mounting, and a return-to-landing flow by clicking the name.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-2",
-      "title": "Interactive landing background (cursor/touch reactive mesh + overlay)",
+      "title": "Forced dark theme via document root class",
       "synonyms": [
-        "Canvas mesh background",
-        "InteractiveBackground"
+        "Dark mode only",
+        "Global dark class"
       ],
-      "description": "Renders a performance-optimized canvas point mesh (25px spacing) that brightens and subtly moves toward the cursor/touch, plus a radial dark overlay that locally fades around the interaction point. Only visible in the initial landing state.",
+      "description": "On app mount, adds the dark class to document.documentElement to enforce dark theme tokens regardless of system preference.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-3",
-      "title": "Unified identity group and profile-picture morphing animation",
+      "title": "Application-wide error boundary with fallback UI",
       "synonyms": [
-        "Profile morph to mode buttons",
-        "Identity group container"
+        "AppErrorBoundary",
+        "Render crash protection"
       ],
-      "description": "Displays a single identity group (profile image + name + role line) that changes scale/position between the initial center state and the mode state. Profile image can morph to the selected mode button position using measured DOM rects for smooth spatial continuity.",
+      "description": "Catches render/runtime errors, logs them, and shows a full-screen fallback with a reload button to avoid white-screen failures.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-4",
-      "title": "Personal mode content (scrollable sections + projects + expandable beliefs)",
+      "title": "Landing cover background preload and fade-in",
       "synonyms": [
-        "PersonalModeContent",
-        "Personal Journey page"
+        "Cinematic cover preload",
+        "Background fade-in"
       ],
-      "description": "Provides a scrollable Personal Journey view with background preloading and a branded dark overlay. Includes sections for thoughts, curiosities, a horizontal carousel of personal projects (with hint animation), a personal note, and an expandable “Personal Beliefs & Interests” section.",
+      "description": "Preloads the landing background image and fades it in once loaded; includes a gradient overlay to maintain text contrast.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-5",
-      "title": "Professional mode content (timeline, experience, skills, tools, ecosystem, projects)",
+      "title": "Interactive landing background (canvas point mesh + cursor-positioned radial overlay)",
       "synonyms": [
-        "ProfessionalModeContent",
-        "Professional Work page"
+        "InteractiveBackground",
+        "Pointer-reactive mesh"
       ],
-      "description": "Provides a scrollable Professional Work view with background preloading, a work-philosophy carousel, an animated timeline with vector backgrounds, a capabilities grid, interactive work experience cards with expandable achievements, selected professional projects carousel, work approach statements, tool clusters with hover effects, and expandable ecosystem fluency categories.",
+      "description": "Draws a dense point mesh on a canvas that brightens/grows/moves near pointer/touch position, plus a CSS radial overlay controlled via CSS variables. Only shown on the landing page.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-6",
-      "title": "Project detail modal with carousel, YouTube embed, and links",
+      "title": "Mode selector UI with underline animation, hover parallax shift, and tap micro-motion",
       "synonyms": [
-        "ProjectCard overlay",
-        "Project modal"
+        "Animated underline navigation",
+        "Mode hover background shift"
       ],
-      "description": "ProjectCard renders a clickable card opening a full-screen modal with dimming backdrop, scrollable content, paragraphs, optional responsive YouTube embed, horizontally scrollable image carousel with navigation buttons, optional live project link, and arbitrary external links. Supports extra metadata for professional projects (role/tools/results).",
+      "description": "Top navigation provides PERSONAL/PROFESSIONAL buttons with animated underline and active styling; background shifts subtly on hover; click triggers a short tap animation.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-7",
-      "title": "Mode-aware footer social links",
+      "title": "Audio and haptic feedback on mode selection",
       "synonyms": [
-        "Dynamic social icons",
-        "Footer links"
+        "Tap sound feedback",
+        "Mobile vibration feedback"
       ],
-      "description": "Footer renders different sets of social icons depending on the active mode (e.g., Instagram for personal; LinkedIn/GitHub for professional), with hover scaling and proper external-link behavior.",
+      "description": "Mode selection attempts to play a tap sound and triggers device vibration on supported devices, with graceful handling if blocked/unsupported.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-8",
-      "title": "Tap feedback: audio + haptics + micro-motion animation",
+      "title": "Footer with mode-specific social links",
       "synonyms": [
-        "Mode selection feedback",
-        "Tap sound + vibrate"
+        "Social icon bar",
+        "Contextual socials"
       ],
-      "description": "On mode selection, plays a subtle tap sound and triggers mobile vibration when available. Also adds a micro-motion CSS animation class to the tapped mode button for tactile feedback.",
+      "description": "Shows a persistent footer with location text and a set of social/contact icons that changes depending on selected mode (personal vs professional).",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-9",
-      "title": "Image preloading and branded overlay backgrounds",
+      "title": "Unified identity block with return-to-landing interaction",
       "synonyms": [
-        "Background preload",
-        "Mode entry backgrounds"
+        "Identity group",
+        "Clickable name to return home"
       ],
-      "description": "Preloads key images (landing background and profile photo; per-mode entry backgrounds) and applies fade-in/opacity transitions. Personal/Professional modes include branded dark gradient overlays atop background images for readability and consistent mood.",
+      "description": "Displays greeting/name/tagline as a unified animated group; clicking the name while in a mode transitions back to the initial landing state.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-10",
-      "title": "Scroll-triggered reveal animations and sequential section/item entrances",
+      "title": "Morphing profile picture transitions with resize-driven re-measurement",
       "synonyms": [
-        "Section fade-in",
-        "Timeline/work/tools/ecosystem animations"
+        "Profile morph animation",
+        "useModeSelectorRemeasure"
       ],
-      "description": "Implements scroll-based detection to add CSS classes that reveal sections. Timeline items, work experience blocks, ecosystem entries, and tool pills animate in sequentially using index-based delays for a guided storytelling effect.",
+      "description": "A single profile image element morphs between centered landing placement and mode selector geometry; resize/ResizeObserver triggers force re-measurement so morph alignment stays correct across responsive changes.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-11",
-      "title": "Internet Identity authentication provider (login/logout + persisted identity)",
+      "title": "Internally scrollable mode pages with scroll cue",
       "synonyms": [
-        "InternetIdentityProvider",
-        "II auth context"
+        "Mode scroll containers",
+        "Scroll to explore cue"
       ],
-      "description": "Provides a React context wrapper for Internet Identity using @dfinity/auth-client, supporting login/logout, delegation validity checks, configurable derivation origin, and loading any stored authenticated identity on mount.",
+      "description": "Personal/Professional modes render in internal scroll containers with smooth scrolling and a “Scroll to explore” cue that fades after the user scrolls.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-12",
-      "title": "ICP actor creation and React Query integration",
+      "title": "Scroll-triggered section reveal animations",
       "synonyms": [
-        "useActor hook",
-        "Actor lifecycle management"
+        "Section fade-in",
+        "Scroll reveal"
       ],
-      "description": "Creates an ICP canister actor either anonymously or with the authenticated identity, keyed by principal in React Query. On actor changes, it invalidates and refetches dependent queries to keep data consistent across login state changes.",
+      "description": "As the user scrolls mode content, sections add a visibility class when near the viewport to trigger fade/translate entrance animations.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-13",
-      "title": "Backend storage operations mixin (authorization refresh, dead-blob pruning, cycles refill)",
+      "title": "Personal mode narrative content page",
       "synonyms": [
-        "Motoko storage mixin",
-        "Caffeine storage admin endpoints"
+        "PersonalModeContent",
+        "Personal Journey"
       ],
-      "description": "Motoko backend actor includes a storage mixin exposing endpoints to: refresh authorized gateway principals by calling a cashier canister; check if a blob is live; retrieve dead blobs to delete (authorized only); confirm blob deletion and force GC; refill/top-up cashier with cycles; and return a placeholder upload certificate response.",
+      "description": "Personal mode includes sections for thinking statements, current curiosities, a personal note, and an expandable “Personal Beliefs & Interests” area.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-14",
-      "title": "Reusable ICP app build/deploy template (monorepo scaffolding + scripts)",
+      "title": "Stay-in-touch email CTA",
       "synonyms": [
-        "build-template",
-        "ICP packaging template",
-        "deploy tooling"
+        "Email CTA",
+        "Contact button"
       ],
-      "description": "Adds a reusable build template with Dockerfile, deploy script, ICP YAML/canister config scaffolding, workspace package management, and helper scripts (e.g., image pruning/resizing) to standardize building and deploying the app/canisters.",
+      "description": "Personal mode provides a “Stay in touch” button that opens the user’s email client via a mailto: link with a preset subject.",
       "reqIds": [],
       "version": 1
     },
     {
       "id": "IF-15",
-      "title": "Reusable shadcn-ui component library scaffold integrated into the frontend template",
+      "title": "Personal projects horizontal carousel",
       "synonyms": [
-        "shadcn-ui",
-        "UI component scaffold",
-        "template UI kit"
+        "Personal projects slider",
+        "Swipeable project list"
       ],
-      "description": "Introduces a large set of prebuilt shadcn-ui React components (buttons, dialogs, accordions, forms, etc.) plus supporting config (utils, hooks, Tailwind/PostCSS/Vite config) as part of the frontend build template for consistent UI construction.",
+      "description": "Displays personal projects in a horizontally scrollable list of ProjectCards inside Personal Journey.",
       "reqIds": [],
       "version": 1
     },
     {
-      "id": "feature-fix-the-personal-and-professional-mode-selector-text-link-styling-so-that-in-the-selected-active-state-when-the-label-becomes-bold-the-border-underline-correctly-spans-the-full-rendered-text-width-including-the-bolded-glyph-width-exactly-as-it-does-on-hover-without-changing-any-existing-transitions-timings-animations-or-overall-visual-design",
-      "title": "Fix the PERSONAL and PROFESSIONAL mode selector text-link styling so that in the selected/active state (when the label becomes bold), the border/underline correctly spans the full rendered text width (including the bolded glyph width) exactly as it does on hover, without changing any existing transitions, timings, animations, or overall visual design.",
+      "id": "IF-16",
+      "title": "One-time carousel hint animation (session-scoped)",
+      "synonyms": [
+        "Carousel nudge",
+        "Swipe hint"
+      ],
+      "description": "Uses an IntersectionObserver plus sessionStorage to play a one-time nudge animation encouraging horizontal swipe/scroll when the personal projects carousel becomes visible.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-17",
+      "title": "Expandable “Personal Beliefs & Interests” section",
+      "synonyms": [
+        "Beliefs accordion",
+        "Know me beyond work"
+      ],
+      "description": "Provides a toggleable expandable section with animated subsection reveals, allowing deeper personal information to be shown/hidden.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-18",
+      "title": "Professional mode narrative content page",
+      "synonyms": [
+        "ProfessionalModeContent",
+        "Professional Work"
+      ],
+      "description": "Professional mode includes work philosophy cards, an animated career timeline, capabilities, interactive work experience progression, selected professional projects carousel, tools clusters, and expandable ecosystem fluency categories.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-19",
+      "title": "Professional timeline with animated vector backgrounds",
+      "synonyms": [
+        "Career timeline",
+        "Animated timeline cards"
+      ],
+      "description": "Displays a multi-stage timeline with vector background images per stage and stage-specific animation classes for subtle motion effects.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-20",
+      "title": "Professional mode staggered entrance animations",
+      "synonyms": [
+        "Staggered reveal",
+        "Scroll-synced sequential animations"
+      ],
+      "description": "On scroll, timeline items, work experience blocks, ecosystem cards, and tool pills animate into view with index-based stagger delays.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-21",
+      "title": "Interactive work experience progression with expandable achievements and level visualization",
+      "synonyms": [
+        "Work experience ladder",
+        "Role expansion cards"
+      ],
+      "description": "Renders per-company role progression cards with hover/click activation, responsibilities lists, expandable achievements, and level indicators/badges with color coding and promotion arrows.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-22",
+      "title": "CV download CTA with hover/focus thumbnail preview and downloaded state",
+      "synonyms": [
+        "Download CV button",
+        "Resume preview"
+      ],
+      "description": "Provides a “Download CV (PDF)” button that triggers a static asset download and shows a temporary “Downloaded!” state; a CV thumbnail preview appears on hover or keyboard focus.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-23",
+      "title": "Selected professional projects carousel",
+      "synonyms": [
+        "Professional project slider",
+        "Work samples carousel"
+      ],
+      "description": "Shows selected professional projects as horizontally scrollable ProjectCards with professional metadata (role/tools/results) shown in the modal overlay.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-24",
+      "title": "Tools showcase with colored category pills and hover glow",
+      "synonyms": [
+        "Tool category clusters",
+        "Tool pill grid"
+      ],
+      "description": "Shows tool categories and their tools as colored pills with hover scaling/glow effects and scroll-based entrance animations.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-25",
+      "title": "Expandable ecosystem fluency grid with animated item reveals",
+      "synonyms": [
+        "Domain fluency cards",
+        "Ecosystem accordion grid"
+      ],
+      "description": "Displays ecosystem/domain cards that expand/collapse to reveal detailed lists, including lighting overlays and staggered list item reveal animations.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-26",
+      "title": "ProjectCard tiles with modal project detail overlays",
+      "synonyms": [
+        "Clickable project tile",
+        "Project modal overlay"
+      ],
+      "description": "Reusable project cards open a centered modal overlay with dimming backdrop, click-outside-to-close, close button, and scrollable content area.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-27",
+      "title": "YouTube embed support in project overlays",
+      "synonyms": [
+        "YouTube URL parsing",
+        "Responsive iframe embed"
+      ],
+      "description": "Project overlays can render a responsive YouTube iframe by parsing common YouTube URL formats into an embed URL.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-28",
+      "title": "Optional image carousel in project overlays with navigation",
+      "synonyms": [
+        "Project image gallery",
+        "Horizontal image scroller"
+      ],
+      "description": "Project overlays can render a horizontally scrollable image carousel with snap scrolling and left/right navigation buttons.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-29",
+      "title": "External links and live project CTAs in project overlays",
+      "synonyms": [
+        "Project links",
+        "Live project button"
+      ],
+      "description": "Project overlays support a primary Live Project link and additional labeled external links (opening in new tabs when appropriate).",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-30",
+      "title": "React Query integration and global QueryClient",
+      "synonyms": [
+        "QueryClientProvider",
+        "Client-side query caching"
+      ],
+      "description": "Bootstraps a global QueryClient and uses React Query to manage cached async state (notably the backend actor).",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-31",
+      "title": "Internet Identity authentication provider (login/logout + persisted identity loading)",
+      "synonyms": [
+        "InternetIdentityProvider",
+        "II auth context"
+      ],
+      "description": "Provides a React context for Dfinity AuthClient: initializes on mount, loads persisted identity if authenticated, exposes login/logout, validates delegations, and tracks status flags/errors.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-32",
+      "title": "Backend actor lifecycle management (anonymous vs authenticated)",
+      "synonyms": [
+        "useActor",
+        "Actor caching per principal"
+      ],
+      "description": "Creates and caches an Internet Computer backend actor keyed by principal; uses an anonymous actor when not authenticated, and invalidates/refetches dependent queries when the actor changes.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-33",
+      "title": "Backend query hook scaffolding",
+      "synonyms": [
+        "useQueries placeholder",
+        "React Query template hook"
+      ],
+      "description": "Includes a placeholder React Query hook (useExample) demonstrating how to run backend queries once an actor is available; currently returns no data.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-34",
+      "title": "ICP custom domain + Internet Identity support via .well-known assets",
+      "synonyms": [
+        "IC domain verification",
+        "II alternative origins"
+      ],
+      "description": "Includes .well-known/ic-domains and .well-known/ii-alternative-origins for custom domain and Internet Identity configuration.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-35",
+      "title": "ICP asset inclusion configuration for public static files",
+      "synonyms": [
+        ".ic-assets.json5",
+        "IC asset canister config"
+      ],
+      "description": "Explicitly includes required static assets (e.g., ogcard.jpg and .well-known) to ensure they are deployed and publicly accessible on the Internet Computer.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-36",
+      "title": "Canonical URL + Open Graph/Twitter Card metadata using ogcard.jpg",
+      "synonyms": [
+        "SEO metadata",
+        "Social preview cards",
+        "OG tags",
+        "Twitter card tags"
+      ],
+      "description": "Adds a canonical link tag and includes Open Graph + Twitter card meta tags directly in frontend/index.html, referencing ogcard.jpg with declared dimensions and image/jpeg type for consistent social previews.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-37",
+      "title": "Open Graph/Twitter preview verification documentation",
+      "synonyms": [
+        "OG preview troubleshooting",
+        "Social card validation guide"
+      ],
+      "description": "Provides OG_PREVIEW_VERIFICATION.md with validation steps (opengraph.xyz, Twitter validator, Facebook debugger) and a deployment checklist focused on ogcard.jpg accessibility and content-type correctness.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "IF-38",
+      "title": "ICP Motoko blob-storage admin/maintenance API",
+      "synonyms": [
+        "Blob storage admin API",
+        "Dead blob pruning",
+        "Cycles top-up"
+      ],
+      "description": "Motoko canister exposes endpoints to refresh authorized gateway principals, check blob liveness, list dead blobs for authorized callers, confirm deletions and trigger GC, top up cycles via a cashier canister, and returns a placeholder upload certificate response.",
+      "reqIds": [],
+      "version": 1
+    },
+    {
+      "id": "feature-ensure-the-open-graph-twitter-card-image-file-is-present-in-the-deployed-frontend-asset-canister-at-the-public-root-path-ogcard-jpg-not-only-referenced-in-metadata-so-opengraph-twitter-crawlers-can-fetch-it-directly",
+      "title": "Ensure the Open Graph / Twitter card image file is present in the deployed frontend asset canister at the public root path `/ogcard.jpg` (not only referenced in metadata), so OpenGraph/Twitter crawlers can fetch it directly.",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
+    },
+    {
+      "id": "feature-verify-and-if-needed-correct-the-ic-asset-deployment-configuration-so-ogcard-jpg-is-included-in-the-asset-canister-upload-rules-and-is-not-ignored-during-build-deploy",
+      "title": "Verify and, if needed, correct the IC asset deployment configuration so `ogcard.jpg` is included in the asset canister upload rules and is not ignored during build/deploy.",
+      "reqIds": [
+        "REQ-2"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-keep-open-graph-and-twitter-meta-tags-in-frontend-index-html-referencing-the-absolute-url-https-www-prabhatchhirolya-com-ogcard-jpg-and-ensure-the-declared-image-type-remains-image-jpeg",
+      "title": "Keep Open Graph and Twitter meta tags in `frontend/index.html` referencing the absolute URL `https://www.prabhatchhirolya.com/ogcard.jpg` and ensure the declared image type remains `image/jpeg`.",
+      "reqIds": [
+        "REQ-3"
+      ],
+      "version": 1
     }
   ],
-  "new_feature_requests": [],
-  "architecturalNotes": [
-    "Frontend is a React SPA with component-driven UI (LandingPage orchestrates modes; PersonalModeContent/ProfessionalModeContent are scrollable sub-pages; ProjectCard provides reusable modal/details UI).",
-    "Styling uses Tailwind CSS with a custom OKLCH token system and extensive bespoke CSS animations for micro-interactions and scroll reveals.",
-    "Dark theme is enforced via next-themes ThemeProvider (forcedTheme=\"dark\").",
-    "State-driven page transitions: mode changes trigger coordinated fade-out/fade-in and profile-picture morphing based on DOM measurements of the mode buttons.",
-    "Interactive background implemented with a canvas-rendered point mesh + CSS radial-gradient overlay that tracks mouse/touch, only enabled in the initial landing state.",
-    "Data layer uses @tanstack/react-query with a custom useActor hook that creates an ICP canister actor (anonymous or authenticated) and invalidates dependent queries on identity change.",
-    "Authentication uses Internet Identity via @dfinity/auth-client wrapped in a context provider (InternetIdentityProvider) with login/logout and delegation validity checks.",
-    "Backend is Motoko with an actor composed via include MixinStorage(); mixin exposes storage operations leveraging Prim system APIs (dead blob discovery/pruning, blob liveness, cycles balance/send).",
-    "Repository now includes a reusable build-template workspace for ICP apps (Dockerfile, deploy.sh, icp.yaml, workspace package manifests, and scripts for asset/image maintenance).",
-    "Build-template frontend includes a shadcn-ui component scaffold with accompanying Tailwind/Vite/TypeScript configuration and shared utility modules.",
-    "Custom ESLint rules were added in the build-template frontend to enforce project conventions (e.g., Internet Identity provider usage, query-key constraints)."
+  "new_feature_requests": [
+    {
+      "id": "AR-1",
+      "summary": "Fix OG/Twitter card image deployment: ensure ogcard.jpg exists at public root (/ogcard.jpg), is included in ICP asset canister deployment rules, and meta tags reference it so link previews work",
+      "reqIds": [],
+      "status": "pending"
+    }
   ],
-  "knownIssues": [
-    "frontend/index.css appears duplicated with conflicting :root tokens (one light-root/dark override version and one dark-root version). This can cause unpredictable styling depending on bundler/import resolution.",
-    "ProfessionalModeContent “Download CV” button is a stub (console.log only) and does not actually download a PDF.",
-    "frontend/src/hooks/useQueries.ts is explicitly a placeholder; no real backend queries are implemented yet.",
-    "InteractiveBackground: when cursor is exactly on a mesh point, distance can be 0 and (dx / distance) will yield Infinity/NaN, potentially causing rendering artifacts (should guard distance === 0).",
-    "Scroll-triggered sequential animations use setTimeout per scroll without cancellation; repeated scrolling can queue multiple timeouts and re-add classes redundantly (minor perf/behavior risk).",
-    "LandingPage sets backgroundAttachment: 'fixed' on the background; this can be problematic on some mobile browsers (jank/ignored fixed backgrounds).",
-    "Backend Storage state (authorizedPrincipals) is transient (not stable); it will reset on canister upgrade/reinstall unless persisted elsewhere.",
-    "Storage.refillCashier uses Nat.sub(currentBalance, reservedCycles) which may trap if currentBalance < reservedCycles; should clamp at 0 before subtraction.",
-    "Backend certificate creation endpoint (_caffeineStorageCreateCertificate) returns a static structure and does not actually create/validate an upload certificate (appears placeholder).",
-    "Backend depends on env var CAFFFEINE_STORAGE_CASHIER_PRINCIPAL; missing configuration will trap at runtime.",
-    "Mode selector (PERSONAL/PROFESSIONAL) pill border sizing bug: on hover the border expands to wrap full text, but in active/selected (bold) state the border width is too small/clipped, suggesting fixed width or missing padding in active state. Needs fix without altering transitions/design."
+  "architectural_notes": [
+    "Frontend is a React SPA (Vite-style entry) mounted in frontend/src/main.tsx and wrapped with React Query (QueryClientProvider) plus an InternetIdentityProvider context.",
+    "Core UX is a small mode state machine (initial/personal/professional) in LandingPage/App using timed fade choreography and delayed content mounting for smooth transitions.",
+    "Styling is Tailwind CSS extended with OKLCH design tokens and extensive bespoke CSS animations (section reveals, timeline vector motion, hover glows, morph transitions).",
+    "Landing visuals combine a preloaded cover background, a CSS overlay, and a canvas-based interactive mesh background driven by pointer/touch position.",
+    "Personal/Professional pages use internal scroll containers; scroll listeners add CSS classes to trigger staged entrance animations.",
+    "Projects are encapsulated in a reusable ProjectCard component that opens a modal overlay with optional YouTube embed, image carousel, and external CTAs.",
+    "Authentication scaffolding uses Dfinity AuthClient (Internet Identity) with persisted identity restoration; backend access is via an actor cached per principal and recreated on identity changes.",
+    "Backend is a minimal Motoko canister composed via a mixin that exposes blob-storage maintenance/admin endpoints (authorization refresh, dead-blob discovery/pruning, cycles top-up).",
+    "Production/static hosting on ICP is supported via .well-known assets and explicit asset inclusion rules in frontend/public/.ic-assets.json5.",
+    "SEO/social preview metadata is authored directly in frontend/index.html (canonical, Open Graph, Twitter) and validated via OG_PREVIEW_VERIFICATION.md."
+  ],
+  "known_issues": [
+    "InteractiveBackground.tsx re-initializes the mesh animation effect whenever mousePos changes (effect depends on mousePos), causing unnecessary teardown/recreate work on every pointer move; mousePos should be stored in a ref or excluded from effect deps.",
+    "InteractiveBackground.tsx can divide by zero when distance === 0 (dx/distance, dy/distance), producing Infinity/NaN and possible rendering artifacts.",
+    "ProfessionalModeContent.tsx queues many setTimeout calls from inside the scroll handler for staggered reveals without cancellation/deduping; fast scrolling can schedule redundant timers and waste work.",
+    "ProfessionalModeContent.tsx defines carouselRefs but does not use them (unused refs / dead code).",
+    "ProfessionalModeContent.tsx uses the same toggle handler on onMouseEnter and onMouseLeave for ecosystem cards, which can cause expand/collapse flicker and conflicts with click toggling.",
+    "useModeSelectorRemeasure.ts depends on the identity of the elementRefs array; if callers pass a new inline array each render, observers can be re-registered unnecessarily.",
+    "backend/blob-storage/Storage.mo uses Nat.sub(currentBalance, reservedCycles) which can trap if currentBalance < reservedCycles.",
+    "backend/blob-storage/Storage.mo traps if env var CAFFFEINE_STORAGE_CASHIER_PRINCIPAL is missing, making deployment/config brittle.",
+    "backend/blob-storage/Mixin.mo stores authorization state in a transient variable (resets on upgrade) and _caffeineStorageUpdateGatewayPrincipals is callable without access control (any caller can trigger refresh).",
+    "backend/blob-storage/Mixin.mo _caffeineStorageCreateCertificate is a placeholder and does not implement real certificate creation/verification."
   ],
   "isFixRequest": true,
-  "generatedImages": [],
   "gameProjectType": "none",
-  "projectName": "Prabhat Chhirolya Portfolio Landing Page",
+  "projectName": "Prabhat Chhirolya Creative OS",
   "clarification_mode": "instant",
-  "clarification_rounds": 0,
-  "requiresBackendChanges": false,
-  "requiresFrontendChanges": true
+  "clarification_rounds": 0
 }

@@ -1,10 +1,11 @@
 # Specification
 
 ## Summary
-**Goal:** Fix the PERSONAL/PROFESSIONAL mode selector so the active (bold) label’s border/underline spans the full rendered text width without altering existing hover/transition behavior or visual design.
+**Goal:** Fix deployment so the Open Graph/Twitter card image is publicly available at `/ogcard.jpg` for crawlers.
 
 **Planned changes:**
-- Adjust the mode selector’s active-state styling so the underline/border width is computed from the bold text width (matching hover behavior).
-- Keep all existing transitions/animations/timings unchanged while applying the minimal CSS/class updates needed to prevent active-state width clipping.
+- Add/ensure `frontend/public/ogcard.jpg` exists in the repo as the root OG image asset (1200x630 JPEG).
+- Verify and adjust `frontend/public/.ic-assets.json5` so `ogcard.jpg` is included in asset-canister upload rules (not ignored) and is served at `/ogcard.jpg`.
+- Confirm `frontend/index.html` continues to reference `https://www.prabhatchhirolya.com/ogcard.jpg` for `og:image`, `og:image:secure_url`, and `twitter:image`, with `og:image:type` set to `image/jpeg`.
 
-**User-visible outcome:** When either PERSONAL or PROFESSIONAL is selected, its underline/border cleanly wraps the entire bold label text (no clipping/shortfall), and hover animations behave exactly as they do currently.
+**User-visible outcome:** Sharing the site link on platforms that use Open Graph/Twitter cards reliably shows the correct preview image, and `https://www.prabhatchhirolya.com/ogcard.jpg` returns the JPEG (HTTP 200) instead of a missing/incorrect response.

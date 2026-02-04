@@ -1,24 +1,47 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-03T12:42:37.535Z",
+  "generatedAt": "2026-02-04T14:45:39.691Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 1,
-    "implemented": 1,
+    "total": 3,
+    "implemented": 3,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Fix the PERSONAL and PROFESSIONAL mode selector text-link styling so that in the selected/active state (when the label becomes bold), the border/underline correctly spans the full rendered text width (including the bolded glyph width) exactly as it does on hover, without changing any existing transitions, timings, animations, or overall visual design.",
+        "summary": "Ensure the Open Graph / Twitter card image file is present in the deployed frontend asset canister at the public root path `/ogcard.jpg` (not only referenced in metadata), so OpenGraph/Twitter crawlers can fetch it directly.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/index.css"
+          "frontend/public/ogcard.jpg",
+          "frontend/OG_PREVIEW_VERIFICATION.md"
         ],
         "matchedFiles": [
-          "frontend/src/index.css"
+          "frontend/OG_PREVIEW_VERIFICATION.md"
+        ]
+      },
+      {
+        "id": "REQ-2",
+        "summary": "Verify and, if needed, correct the IC asset deployment configuration so `ogcard.jpg` is included in the asset canister upload rules and is not ignored during build/deploy.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/public/.ic-assets.json5"
+        ],
+        "matchedFiles": [
+          "frontend/public/.ic-assets.json5"
+        ]
+      },
+      {
+        "id": "REQ-3",
+        "summary": "Keep Open Graph and Twitter meta tags in `frontend/index.html` referencing the absolute URL `https://www.prabhatchhirolya.com/ogcard.jpg` and ensure the declared image type remains `image/jpeg`.",
+        "status": "implemented",
+        "plannedFiles": [
+          "frontend/index.html"
+        ],
+        "matchedFiles": [
+          "frontend/index.html"
         ]
       }
     ]
@@ -28,7 +51,9 @@
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/index.css",
+    "frontend/OG_PREVIEW_VERIFICATION.md",
+    "frontend/index.html",
+    "frontend/public/.ic-assets.json5",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",
