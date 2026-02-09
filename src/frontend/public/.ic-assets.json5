@@ -4,11 +4,75 @@
     "ignore": false
   },
   {
+    "match": "assets/ogcard-v2.jpg",
+    "ignore": false,
+    "headers": {
+      "Content-Type": "image/jpeg",
+      "Cache-Control": "public, max-age=31536000, immutable"
+    }
+  },
+  {
     "match": "ogcard.jpg",
     "ignore": false,
     "headers": {
       "Content-Type": "image/jpeg",
       "Cache-Control": "public, max-age=31536000, immutable"
+    }
+  },
+  {
+    "match": "favicon.ico",
+    "ignore": false,
+    "headers": {
+      "Content-Type": "image/x-icon",
+      "Cache-Control": "public, max-age=31536000, immutable"
+    }
+  },
+  {
+    "match": "favicon-16x16.png",
+    "ignore": false,
+    "headers": {
+      "Content-Type": "image/png",
+      "Cache-Control": "public, max-age=31536000, immutable"
+    }
+  },
+  {
+    "match": "favicon-32x32.png",
+    "ignore": false,
+    "headers": {
+      "Content-Type": "image/png",
+      "Cache-Control": "public, max-age=31536000, immutable"
+    }
+  },
+  {
+    "match": "apple-touch-icon.png",
+    "ignore": false,
+    "headers": {
+      "Content-Type": "image/png",
+      "Cache-Control": "public, max-age=31536000, immutable"
+    }
+  },
+  {
+    "match": "android-chrome-192x192.png",
+    "ignore": false,
+    "headers": {
+      "Content-Type": "image/png",
+      "Cache-Control": "public, max-age=31536000, immutable"
+    }
+  },
+  {
+    "match": "android-chrome-512x512.png",
+    "ignore": false,
+    "headers": {
+      "Content-Type": "image/png",
+      "Cache-Control": "public, max-age=31536000, immutable"
+    }
+  },
+  {
+    "match": "site.webmanifest",
+    "ignore": false,
+    "headers": {
+      "Content-Type": "application/manifest+json",
+      "Cache-Control": "public, max-age=86400"
     }
   }
 ]

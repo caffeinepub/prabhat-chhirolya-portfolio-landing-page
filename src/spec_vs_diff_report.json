@@ -1,44 +1,35 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-04T14:45:39.672Z",
-  "summary": "REQ-2 and REQ-3 appear implemented via updates to `frontend/public/.ic-assets.json5` and confirmation of OG/Twitter meta tags in `frontend/index.html`. REQ-1 is not evidenced in the diff because no `frontend/public/ogcard.jpg` asset file was added. The diff also includes extensive unrelated frontend UI/feature changes that were not requested and may violate the constraint to avoid modifying immutable frontend paths.",
+  "generatedAt": "2026-02-09T15:16:24.013Z",
+  "summary": "REQ-2, REQ-3, REQ-4, and REQ-5 appear implemented via updates to frontend/index.html, frontend/public/.ic-assets.json5, and frontend/OG_PREVIEW_VERIFICATION.md. REQ-1 (adding the actual static image file frontend/public/assets/ogcard-v2.jpg) is not evidenced in the diff (no added files shown). The diff also includes substantial unrelated UI/feature work across many frontend/src files and an update to project_state.json, which were not requested by the BuildRequest.",
   "missing_requirements": [
     {
       "id": "REQ-1",
-      "requirement": "Ensure the Open Graph / Twitter card image file is present in the deployed frontend asset canister at the public root path `/ogcard.jpg` (repository contains `frontend/public/ogcard.jpg`).",
-      "reason": "The diff shows no added file for `frontend/public/ogcard.jpg` (Added files: none). Without the actual JPEG in `frontend/public/`, the asset can’t be deployed/served from `/ogcard.jpg` even if metadata and asset rules exist.",
+      "requirement": "Add a new versioned Open Graph image file named `ogcard-v2.jpg` and ensure it is deployed as a direct static asset at `frontend/public/assets/ogcard-v2.jpg` (served without routing or JS handling).",
+      "reason": "The diff summary shows no added files, and there is no evidence that `frontend/public/assets/ogcard-v2.jpg` was added to the repository.",
       "evidence": [
-        "File diff summary: ADDED FILES: none",
-        "frontend/public/.ic-assets.json5 (rule added for ogcard.jpg, but file itself not shown as added)"
+        "File diff summary: ADDED FILES: none"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Large-scale UI/UX and behavior changes across the React frontend (landing page layout/animations, interactive background canvas system, mode selector remeasure hook, project card carousel/YouTube embeds, CV preview behavior, error boundary, global CSS overhaul).",
-      "reason": "BuildRequest is narrowly scoped to ensuring `/ogcard.jpg` is deployed/served and that existing OG/Twitter meta tags remain correct; it explicitly states to not change the portfolio UI/UX beyond what’s necessary.",
+      "description": "Large set of unrelated UI/UX and component changes (landing page layout/animations, interactive background system, project card carousel changes, CV download preview behavior, error boundary, new/changed hooks).",
+      "reason": "BuildRequest is narrowly scoped to OG/Twitter metadata and static asset serving; these front-end feature/UI changes are not requested and violate the 'Non-goals: Adding new product features unrelated to OG/Twitter metadata and static asset serving.'",
       "evidence": [
-        "frontend-file-summaries.txt (lists substantial modifications to App.tsx, LandingPage.tsx, index.css, multiple components, new hook, error boundary, etc.)"
+        "frontend-file-summaries.txt (modified): summaries list modifications to frontend/src/App.tsx, frontend/src/pages/LandingPage.tsx, frontend/src/index.css, frontend/src/components/PersonalModeContent.tsx, frontend/src/components/ProjectCard.tsx, frontend/src/components/ProfessionalModeContent.tsx, frontend/src/components/InteractiveBackground.tsx, frontend/src/hooks/useModeSelectorRemeasure.ts, frontend/src/components/AppErrorBoundary.tsx, etc."
       ]
     },
     {
-      "description": "Backend/data-layer scaffolding changes (placeholder React Query hooks file).",
-      "reason": "Not requested; BuildRequest focuses on static asset deployment for OG/Twitter image and maintaining meta tags.",
+      "description": "Update to project_state.json tracking new_feature_requests/status metadata.",
+      "reason": "BuildRequest does not request changes to project_state.json; it is unrelated to implementing OG image asset + metadata changes.",
       "evidence": [
-        "frontend-file-summaries.txt (mentions `frontend/src/hooks/useQueries.ts` placeholder React Query hooks)"
-      ]
-    },
-    {
-      "description": "Added OG preview verification documentation and updated project state metadata unrelated to deployment fix.",
-      "reason": "Documentation/project-state updates were not requested as part of the requirements (though not harmful, they are out of scope).",
-      "evidence": [
-        "frontend/OG_PREVIEW_VERIFICATION.md",
-        "project_state.json"
+        "project_state.json (modified)"
       ]
     }
   ],
-  "confidence": 0.74,
+  "confidence": 0.73,
   "changed_files": [
     "frontend-file-summaries.txt",
     "frontend/OG_PREVIEW_VERIFICATION.md",

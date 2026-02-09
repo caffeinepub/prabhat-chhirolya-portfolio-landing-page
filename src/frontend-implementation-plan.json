@@ -1,56 +1,90 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Ensure ogcard.jpg is deployed at IC asset canister root for OG/Twitter crawlers",
+  "title": "Versioned OG/Twitter card image as static /assets file with consistent metadata URLs",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Add the OG/Twitter card image to the deployed frontend asset canister root as /ogcard.jpg so crawlers can fetch it directly.",
+      "summary": "Add new versioned OG image as a direct static asset at frontend/public/assets/ogcard-v2.jpg.",
       "acceptanceCriteria": [
-        "The repository contains a root public asset at `frontend/public/ogcard.jpg`.",
-        "After deployment, requesting `https://www.prabhatchhirolya.com/ogcard.jpg` returns HTTP 200 with `content-type: image/jpeg`.",
-        "The returned image matches the intended OG dimensions (1200x630) and is not a 404/redirect-to-index response."
+        "A file exists at `frontend/public/assets/ogcard-v2.jpg` in the repository.",
+        "After deployment, visiting `https://www.prabhatchhirolya.com/assets/ogcard-v2.jpg` returns HTTP 200 and displays the image (not HTML).",
+        "The response includes an appropriate `Content-Type` for a JPEG image."
       ],
       "file_operations": [
         {
-          "path": "frontend/public/ogcard.jpg",
+          "path": "frontend/public/assets/generated/ogcard-v2.jpg.dim_1200x630.jpg",
           "operation": "create",
-          "description": "Add the OG/Twitter card JPEG at the public root so it is deployed and served at `/ogcard.jpg`. Ensure the file is the intended 1200x630 JPEG and matches the existing canonical OG image (e.g., the existing generated OG JPEG) without changing UI/UX."
+          "description": "Add the required generated Open Graph/Twitter card image (1200×630 JPEG) at `frontend/public/assets/generated/ogcard-v2.jpg.dim_1200x630.jpg` for source tracking and verification."
         },
         {
-          "path": "frontend/OG_PREVIEW_VERIFICATION.md",
-          "operation": "modify",
-          "description": "Update the deployment checklist/notes to explicitly confirm that `frontend/public/ogcard.jpg` is the source-of-truth asset deployed to `/ogcard.jpg`, and that it must be a 1200x630 JPEG returning `image/jpeg` (to prevent 404 or index.html fallback confusion)."
+          "path": "frontend/public/assets/ogcard-v2.jpg",
+          "operation": "create",
+          "description": "Add the deploy-target OG image at `frontend/public/assets/ogcard-v2.jpg` (JPEG). Source it from `frontend/public/assets/generated/ogcard-v2.jpg.dim_1200x630.jpg` to ensure correct dimensions and format, and keep it as a direct static file (no routing/JS handling)."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Confirm IC asset upload rules include ogcard.jpg and do not ignore it during deploy.",
+      "summary": "Update OG/Twitter image meta tags in frontend/index.html to the absolute versioned /assets URL.",
       "acceptanceCriteria": [
-        "`frontend/public/.ic-assets.json5` includes an explicit rule that does not ignore `ogcard.jpg`.",
-        "A fresh deploy results in `ogcard.jpg` appearing in the asset canister root (served at `/ogcard.jpg`)."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/public/.ic-assets.json5",
-          "operation": "modify",
-          "description": "Adjust/confirm asset canister rules so `ogcard.jpg` is explicitly included (not ignored) and, if supported by the config format, ensure headers are set/overridden so it is served as `image/jpeg` and not treated as a SPA fallback."
-        }
-      ]
-    },
-    {
-      "id": "REQ-3",
-      "summary": "Keep OG/Twitter meta tags pointing to the absolute ogcard.jpg URL with image/jpeg type.",
-      "acceptanceCriteria": [
-        "`frontend/index.html` contains `og:image`, `og:image:secure_url`, and `twitter:image` pointing to `https://www.prabhatchhirolya.com/ogcard.jpg`.",
-        "`frontend/index.html` contains `og:image:type` set to `image/jpeg`."
+        "`frontend/index.html` contains `og:image` with content `https://www.prabhatchhirolya.com/assets/ogcard-v2.jpg`.",
+        "`frontend/index.html` contains `og:image:secure_url` with content `https://www.prabhatchhirolya.com/assets/ogcard-v2.jpg`.",
+        "`frontend/index.html` contains `twitter:image` with content `https://www.prabhatchhirolya.com/assets/ogcard-v2.jpg`.",
+        "No remaining OG/Twitter image meta tags reference the previous `ogcard.jpg` URL."
       ],
       "file_operations": [
         {
           "path": "frontend/index.html",
           "operation": "modify",
-          "description": "Verify and preserve existing Open Graph and Twitter meta tags so they continue to reference the absolute URL `https://www.prabhatchhirolya.com/ogcard.jpg`, and ensure `og:image:type` remains `image/jpeg`."
+          "description": "Replace `og:image`, `og:image:secure_url`, and `twitter:image` content values to use the exact absolute URL `https://www.prabhatchhirolya.com/assets/ogcard-v2.jpg`, and remove any remaining references to `https://www.prabhatchhirolya.com/ogcard.jpg`."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Ensure canonical, og:url, and twitter:url all use the exact trailing-slash URL in frontend/index.html.",
+      "acceptanceCriteria": [
+        "`frontend/index.html` canonical URL is exactly `https://www.prabhatchhirolya.com/`.",
+        "`frontend/index.html` `og:url` is exactly `https://www.prabhatchhirolya.com/`.",
+        "`frontend/index.html` `twitter:url` is exactly `https://www.prabhatchhirolya.com/`."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/index.html",
+          "operation": "modify",
+          "description": "Ensure URL consistency by setting `<link rel=\"canonical\">`, `og:url`, and `twitter:url` to exactly `https://www.prabhatchhirolya.com/` (including the trailing slash)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Explicitly include assets/ogcard-v2.jpg in .ic-assets.json5 with correct Content-Type headers.",
+      "acceptanceCriteria": [
+        "`frontend/public/.ic-assets.json5` includes a rule that matches `assets/ogcard-v2.jpg` with `ignore: false`.",
+        "The rule sets `Content-Type` to `image/jpeg` for `assets/ogcard-v2.jpg`.",
+        "After deployment, `https://www.prabhatchhirolya.com/assets/ogcard-v2.jpg` is served as a static asset with the configured headers."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/public/.ic-assets.json5",
+          "operation": "modify",
+          "description": "Add an explicit asset rule for `assets/ogcard-v2.jpg` with `ignore: false` and headers including at least `Content-Type: image/jpeg` (and align cache headers with existing static image rules as appropriate)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Update OG preview verification documentation to reference the new versioned OG image URL and deployed file path.",
+      "acceptanceCriteria": [
+        "The documentation’s “OG card image” URL and any direct-browser test instructions reference `https://www.prabhatchhirolya.com/assets/ogcard-v2.jpg`.",
+        "The deployment checklist references `frontend/public/assets/ogcard-v2.jpg` as the required deployed file location."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/OG_PREVIEW_VERIFICATION.md",
+          "operation": "modify",
+          "description": "Update all references from `ogcard.jpg` to the new versioned asset URL `https://www.prabhatchhirolya.com/assets/ogcard-v2.jpg`, and update file-location guidance/checklists to use `frontend/public/assets/ogcard-v2.jpg` as the deployment target (and optionally reference `frontend/public/assets/generated/ogcard-v2.jpg.dim_1200x630.jpg` as the source)."
         }
       ]
     }

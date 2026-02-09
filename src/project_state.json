@@ -1,450 +1,53 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Prabhat Chhirolya Creative OS is a dark-themed, highly animated React + Tailwind single-page portfolio. It presents an immersive landing screen with an interactive cursor/touch-responsive background and a two-mode selector (Personal Journey / Professional Work). Each mode renders a long-form, internally scrollable narrative with scroll-triggered section reveals, horizontally scrollable project carousels, and reusable ProjectCard tiles that open modal overlays with rich details (text, optional image carousel, YouTube embeds, and external links). The repo also includes Internet Computer (ICP) scaffolding: Internet Identity authentication context, React Query–based backend actor creation/caching, and a Motoko blob-storage maintenance/admin mixin. SEO/social sharing is handled via canonical + Open Graph/Twitter meta tags in server-served index.html and a deployable ogcard.jpg asset with verification documentation.",
+  "summary": "Website/app deployment project; currently addressing OG/Twitter Card caching issues on X (Twitter) by updating Open Graph/Twitter meta tags and using a versioned OG image served from /public/assets with consistent canonical/og:url.",
+  "architectural_notes": [
+    "Serve OG image as a static asset from /public/assets with a versioned filename to bust caches; update og:image/og:image:secure_url/twitter:image to the new URL; keep canonical/og:url/twitter:url consistent with trailing slash."
+  ],
+  "known_issues": [
+    "OG/Twitter Card appears cached/incorrect on X (Twitter); requires cache-busting OG image + consistent meta tags/URLs."
+  ],
+  "isFixRequest": true,
+  "imageRequirements": "## Required Images\n- Open Graph/Twitter card image, 1200×630, JPEG (ogcard-v2.jpg.dim_1200x630.jpg)",
   "existing_features": [
     {
-      "id": "IF-1",
-      "title": "Three-mode portfolio UX (initial / personal / professional) with coordinated transitions",
-      "synonyms": [
-        "Mode-based portfolio",
-        "Personal/Professional mode switching"
-      ],
-      "description": "Implements a landing state plus two narrative modes. Mode changes coordinate fade-out/fade-in timing, delayed content mounting, and a return-to-landing flow by clicking the name.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-2",
-      "title": "Forced dark theme via document root class",
-      "synonyms": [
-        "Dark mode only",
-        "Global dark class"
-      ],
-      "description": "On app mount, adds the dark class to document.documentElement to enforce dark theme tokens regardless of system preference.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-3",
-      "title": "Application-wide error boundary with fallback UI",
-      "synonyms": [
-        "AppErrorBoundary",
-        "Render crash protection"
-      ],
-      "description": "Catches render/runtime errors, logs them, and shows a full-screen fallback with a reload button to avoid white-screen failures.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-4",
-      "title": "Landing cover background preload and fade-in",
-      "synonyms": [
-        "Cinematic cover preload",
-        "Background fade-in"
-      ],
-      "description": "Preloads the landing background image and fades it in once loaded; includes a gradient overlay to maintain text contrast.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-5",
-      "title": "Interactive landing background (canvas point mesh + cursor-positioned radial overlay)",
-      "synonyms": [
-        "InteractiveBackground",
-        "Pointer-reactive mesh"
-      ],
-      "description": "Draws a dense point mesh on a canvas that brightens/grows/moves near pointer/touch position, plus a CSS radial overlay controlled via CSS variables. Only shown on the landing page.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-6",
-      "title": "Mode selector UI with underline animation, hover parallax shift, and tap micro-motion",
-      "synonyms": [
-        "Animated underline navigation",
-        "Mode hover background shift"
-      ],
-      "description": "Top navigation provides PERSONAL/PROFESSIONAL buttons with animated underline and active styling; background shifts subtly on hover; click triggers a short tap animation.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-7",
-      "title": "Audio and haptic feedback on mode selection",
-      "synonyms": [
-        "Tap sound feedback",
-        "Mobile vibration feedback"
-      ],
-      "description": "Mode selection attempts to play a tap sound and triggers device vibration on supported devices, with graceful handling if blocked/unsupported.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-8",
-      "title": "Footer with mode-specific social links",
-      "synonyms": [
-        "Social icon bar",
-        "Contextual socials"
-      ],
-      "description": "Shows a persistent footer with location text and a set of social/contact icons that changes depending on selected mode (personal vs professional).",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-9",
-      "title": "Unified identity block with return-to-landing interaction",
-      "synonyms": [
-        "Identity group",
-        "Clickable name to return home"
-      ],
-      "description": "Displays greeting/name/tagline as a unified animated group; clicking the name while in a mode transitions back to the initial landing state.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-10",
-      "title": "Morphing profile picture transitions with resize-driven re-measurement",
-      "synonyms": [
-        "Profile morph animation",
-        "useModeSelectorRemeasure"
-      ],
-      "description": "A single profile image element morphs between centered landing placement and mode selector geometry; resize/ResizeObserver triggers force re-measurement so morph alignment stays correct across responsive changes.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-11",
-      "title": "Internally scrollable mode pages with scroll cue",
-      "synonyms": [
-        "Mode scroll containers",
-        "Scroll to explore cue"
-      ],
-      "description": "Personal/Professional modes render in internal scroll containers with smooth scrolling and a “Scroll to explore” cue that fades after the user scrolls.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-12",
-      "title": "Scroll-triggered section reveal animations",
-      "synonyms": [
-        "Section fade-in",
-        "Scroll reveal"
-      ],
-      "description": "As the user scrolls mode content, sections add a visibility class when near the viewport to trigger fade/translate entrance animations.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-13",
-      "title": "Personal mode narrative content page",
-      "synonyms": [
-        "PersonalModeContent",
-        "Personal Journey"
-      ],
-      "description": "Personal mode includes sections for thinking statements, current curiosities, a personal note, and an expandable “Personal Beliefs & Interests” area.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-14",
-      "title": "Stay-in-touch email CTA",
-      "synonyms": [
-        "Email CTA",
-        "Contact button"
-      ],
-      "description": "Personal mode provides a “Stay in touch” button that opens the user’s email client via a mailto: link with a preset subject.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-15",
-      "title": "Personal projects horizontal carousel",
-      "synonyms": [
-        "Personal projects slider",
-        "Swipeable project list"
-      ],
-      "description": "Displays personal projects in a horizontally scrollable list of ProjectCards inside Personal Journey.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-16",
-      "title": "One-time carousel hint animation (session-scoped)",
-      "synonyms": [
-        "Carousel nudge",
-        "Swipe hint"
-      ],
-      "description": "Uses an IntersectionObserver plus sessionStorage to play a one-time nudge animation encouraging horizontal swipe/scroll when the personal projects carousel becomes visible.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-17",
-      "title": "Expandable “Personal Beliefs & Interests” section",
-      "synonyms": [
-        "Beliefs accordion",
-        "Know me beyond work"
-      ],
-      "description": "Provides a toggleable expandable section with animated subsection reveals, allowing deeper personal information to be shown/hidden.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-18",
-      "title": "Professional mode narrative content page",
-      "synonyms": [
-        "ProfessionalModeContent",
-        "Professional Work"
-      ],
-      "description": "Professional mode includes work philosophy cards, an animated career timeline, capabilities, interactive work experience progression, selected professional projects carousel, tools clusters, and expandable ecosystem fluency categories.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-19",
-      "title": "Professional timeline with animated vector backgrounds",
-      "synonyms": [
-        "Career timeline",
-        "Animated timeline cards"
-      ],
-      "description": "Displays a multi-stage timeline with vector background images per stage and stage-specific animation classes for subtle motion effects.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-20",
-      "title": "Professional mode staggered entrance animations",
-      "synonyms": [
-        "Staggered reveal",
-        "Scroll-synced sequential animations"
-      ],
-      "description": "On scroll, timeline items, work experience blocks, ecosystem cards, and tool pills animate into view with index-based stagger delays.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-21",
-      "title": "Interactive work experience progression with expandable achievements and level visualization",
-      "synonyms": [
-        "Work experience ladder",
-        "Role expansion cards"
-      ],
-      "description": "Renders per-company role progression cards with hover/click activation, responsibilities lists, expandable achievements, and level indicators/badges with color coding and promotion arrows.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-22",
-      "title": "CV download CTA with hover/focus thumbnail preview and downloaded state",
-      "synonyms": [
-        "Download CV button",
-        "Resume preview"
-      ],
-      "description": "Provides a “Download CV (PDF)” button that triggers a static asset download and shows a temporary “Downloaded!” state; a CV thumbnail preview appears on hover or keyboard focus.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-23",
-      "title": "Selected professional projects carousel",
-      "synonyms": [
-        "Professional project slider",
-        "Work samples carousel"
-      ],
-      "description": "Shows selected professional projects as horizontally scrollable ProjectCards with professional metadata (role/tools/results) shown in the modal overlay.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-24",
-      "title": "Tools showcase with colored category pills and hover glow",
-      "synonyms": [
-        "Tool category clusters",
-        "Tool pill grid"
-      ],
-      "description": "Shows tool categories and their tools as colored pills with hover scaling/glow effects and scroll-based entrance animations.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-25",
-      "title": "Expandable ecosystem fluency grid with animated item reveals",
-      "synonyms": [
-        "Domain fluency cards",
-        "Ecosystem accordion grid"
-      ],
-      "description": "Displays ecosystem/domain cards that expand/collapse to reveal detailed lists, including lighting overlays and staggered list item reveal animations.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-26",
-      "title": "ProjectCard tiles with modal project detail overlays",
-      "synonyms": [
-        "Clickable project tile",
-        "Project modal overlay"
-      ],
-      "description": "Reusable project cards open a centered modal overlay with dimming backdrop, click-outside-to-close, close button, and scrollable content area.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-27",
-      "title": "YouTube embed support in project overlays",
-      "synonyms": [
-        "YouTube URL parsing",
-        "Responsive iframe embed"
-      ],
-      "description": "Project overlays can render a responsive YouTube iframe by parsing common YouTube URL formats into an embed URL.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-28",
-      "title": "Optional image carousel in project overlays with navigation",
-      "synonyms": [
-        "Project image gallery",
-        "Horizontal image scroller"
-      ],
-      "description": "Project overlays can render a horizontally scrollable image carousel with snap scrolling and left/right navigation buttons.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-29",
-      "title": "External links and live project CTAs in project overlays",
-      "synonyms": [
-        "Project links",
-        "Live project button"
-      ],
-      "description": "Project overlays support a primary Live Project link and additional labeled external links (opening in new tabs when appropriate).",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-30",
-      "title": "React Query integration and global QueryClient",
-      "synonyms": [
-        "QueryClientProvider",
-        "Client-side query caching"
-      ],
-      "description": "Bootstraps a global QueryClient and uses React Query to manage cached async state (notably the backend actor).",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-31",
-      "title": "Internet Identity authentication provider (login/logout + persisted identity loading)",
-      "synonyms": [
-        "InternetIdentityProvider",
-        "II auth context"
-      ],
-      "description": "Provides a React context for Dfinity AuthClient: initializes on mount, loads persisted identity if authenticated, exposes login/logout, validates delegations, and tracks status flags/errors.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-32",
-      "title": "Backend actor lifecycle management (anonymous vs authenticated)",
-      "synonyms": [
-        "useActor",
-        "Actor caching per principal"
-      ],
-      "description": "Creates and caches an Internet Computer backend actor keyed by principal; uses an anonymous actor when not authenticated, and invalidates/refetches dependent queries when the actor changes.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-33",
-      "title": "Backend query hook scaffolding",
-      "synonyms": [
-        "useQueries placeholder",
-        "React Query template hook"
-      ],
-      "description": "Includes a placeholder React Query hook (useExample) demonstrating how to run backend queries once an actor is available; currently returns no data.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-34",
-      "title": "ICP custom domain + Internet Identity support via .well-known assets",
-      "synonyms": [
-        "IC domain verification",
-        "II alternative origins"
-      ],
-      "description": "Includes .well-known/ic-domains and .well-known/ii-alternative-origins for custom domain and Internet Identity configuration.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-35",
-      "title": "ICP asset inclusion configuration for public static files",
-      "synonyms": [
-        ".ic-assets.json5",
-        "IC asset canister config"
-      ],
-      "description": "Explicitly includes required static assets (e.g., ogcard.jpg and .well-known) to ensure they are deployed and publicly accessible on the Internet Computer.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-36",
-      "title": "Canonical URL + Open Graph/Twitter Card metadata using ogcard.jpg",
-      "synonyms": [
-        "SEO metadata",
-        "Social preview cards",
-        "OG tags",
-        "Twitter card tags"
-      ],
-      "description": "Adds a canonical link tag and includes Open Graph + Twitter card meta tags directly in frontend/index.html, referencing ogcard.jpg with declared dimensions and image/jpeg type for consistent social previews.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-37",
-      "title": "Open Graph/Twitter preview verification documentation",
-      "synonyms": [
-        "OG preview troubleshooting",
-        "Social card validation guide"
-      ],
-      "description": "Provides OG_PREVIEW_VERIFICATION.md with validation steps (opengraph.xyz, Twitter validator, Facebook debugger) and a deployment checklist focused on ogcard.jpg accessibility and content-type correctness.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "IF-38",
-      "title": "ICP Motoko blob-storage admin/maintenance API",
-      "synonyms": [
-        "Blob storage admin API",
-        "Dead blob pruning",
-        "Cycles top-up"
-      ],
-      "description": "Motoko canister exposes endpoints to refresh authorized gateway principals, check blob liveness, list dead blobs for authorized callers, confirm deletions and trigger GC, top up cycles via a cashier canister, and returns a placeholder upload certificate response.",
-      "reqIds": [],
-      "version": 1
-    },
-    {
-      "id": "feature-ensure-the-open-graph-twitter-card-image-file-is-present-in-the-deployed-frontend-asset-canister-at-the-public-root-path-ogcard-jpg-not-only-referenced-in-metadata-so-opengraph-twitter-crawlers-can-fetch-it-directly",
-      "title": "Ensure the Open Graph / Twitter card image file is present in the deployed frontend asset canister at the public root path `/ogcard.jpg` (not only referenced in metadata), so OpenGraph/Twitter crawlers can fetch it directly.",
+      "id": "feature-add-a-new-versioned-open-graph-image-file-named-ogcard-v2-jpg-and-ensure-it-is-deployed-as-a-direct-static-asset-at-frontend-public-assets-ogcard-v2-jpg-served-without-routing-or-js-handling",
+      "title": "Add a new versioned Open Graph image file named `ogcard-v2.jpg` and ensure it is deployed as a direct static asset at `frontend/public/assets/ogcard-v2.jpg` (served without routing or JS handling).",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-verify-and-if-needed-correct-the-ic-asset-deployment-configuration-so-ogcard-jpg-is-included-in-the-asset-canister-upload-rules-and-is-not-ignored-during-build-deploy",
-      "title": "Verify and, if needed, correct the IC asset deployment configuration so `ogcard.jpg` is included in the asset canister upload rules and is not ignored during build/deploy.",
+      "id": "feature-update-frontend-index-html-to-replace-all-open-graph-and-twitter-image-meta-tags-to-use-the-exact-absolute-url-https-www-prabhatchhirolya-com-assets-ogcard-v2-jpg-for-og-image-og-image-secure-url-and-twitter-image",
+      "title": "Update `frontend/index.html` to replace all Open Graph and Twitter image meta tags to use the exact absolute URL `https://www.prabhatchhirolya.com/assets/ogcard-v2.jpg` for `og:image`, `og:image:secure_url`, and `twitter:image`.",
       "reqIds": [
         "REQ-2"
       ],
       "version": 1
     },
     {
-      "id": "feature-keep-open-graph-and-twitter-meta-tags-in-frontend-index-html-referencing-the-absolute-url-https-www-prabhatchhirolya-com-ogcard-jpg-and-ensure-the-declared-image-type-remains-image-jpeg",
-      "title": "Keep Open Graph and Twitter meta tags in `frontend/index.html` referencing the absolute URL `https://www.prabhatchhirolya.com/ogcard.jpg` and ensure the declared image type remains `image/jpeg`.",
+      "id": "feature-ensure-url-consistency-across-metadata-by-using-the-exact-trailing-slash-url-https-www-prabhatchhirolya-com-for-the-canonical-link-og-url-and-twitter-url-in-frontend-index-html",
+      "title": "Ensure URL consistency across metadata by using the exact trailing-slash URL `https://www.prabhatchhirolya.com/` for the canonical link, `og:url`, and `twitter:url` in `frontend/index.html`.",
       "reqIds": [
         "REQ-3"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-frontend-public-ic-assets-json5-so-the-new-static-og-image-at-assets-ogcard-v2-jpg-is-explicitly-included-not-ignored-and-served-with-appropriate-headers-at-minimum-correct-content-type-image-jpeg",
+      "title": "Update `frontend/public/.ic-assets.json5` so the new static OG image at `assets/ogcard-v2.jpg` is explicitly included (not ignored) and served with appropriate headers (at minimum correct `Content-Type: image/jpeg`).",
+      "reqIds": [
+        "REQ-4"
+      ],
+      "version": 1
+    },
+    {
+      "id": "feature-update-frontend-og-preview-verification-md-to-reference-the-new-og-image-url-path-https-www-prabhatchhirolya-com-assets-ogcard-v2-jpg-instead-of-the-old-ogcard-jpg-including-the-verification-steps-and-deployment-checklist-paths",
+      "title": "Update `frontend/OG_PREVIEW_VERIFICATION.md` to reference the new OG image URL/path (`https://www.prabhatchhirolya.com/assets/ogcard-v2.jpg`) instead of the old `ogcard.jpg`, including the verification steps and deployment checklist paths.",
+      "reqIds": [
+        "REQ-5"
       ],
       "version": 1
     }
@@ -452,38 +55,12 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Fix OG/Twitter card image deployment: ensure ogcard.jpg exists at public root (/ogcard.jpg), is included in ICP asset canister deployment rules, and meta tags reference it so link previews work",
+      "summary": "Fix OG/Twitter Card caching on X by versioning OG image (ogcard-v2.jpg), serving it from /public/assets, updating og:image/twitter:image tags, and enforcing consistent trailing-slash canonical/og:url/twitter:url.",
       "reqIds": [],
       "status": "pending"
     }
   ],
-  "architectural_notes": [
-    "Frontend is a React SPA (Vite-style entry) mounted in frontend/src/main.tsx and wrapped with React Query (QueryClientProvider) plus an InternetIdentityProvider context.",
-    "Core UX is a small mode state machine (initial/personal/professional) in LandingPage/App using timed fade choreography and delayed content mounting for smooth transitions.",
-    "Styling is Tailwind CSS extended with OKLCH design tokens and extensive bespoke CSS animations (section reveals, timeline vector motion, hover glows, morph transitions).",
-    "Landing visuals combine a preloaded cover background, a CSS overlay, and a canvas-based interactive mesh background driven by pointer/touch position.",
-    "Personal/Professional pages use internal scroll containers; scroll listeners add CSS classes to trigger staged entrance animations.",
-    "Projects are encapsulated in a reusable ProjectCard component that opens a modal overlay with optional YouTube embed, image carousel, and external CTAs.",
-    "Authentication scaffolding uses Dfinity AuthClient (Internet Identity) with persisted identity restoration; backend access is via an actor cached per principal and recreated on identity changes.",
-    "Backend is a minimal Motoko canister composed via a mixin that exposes blob-storage maintenance/admin endpoints (authorization refresh, dead-blob discovery/pruning, cycles top-up).",
-    "Production/static hosting on ICP is supported via .well-known assets and explicit asset inclusion rules in frontend/public/.ic-assets.json5.",
-    "SEO/social preview metadata is authored directly in frontend/index.html (canonical, Open Graph, Twitter) and validated via OG_PREVIEW_VERIFICATION.md."
-  ],
-  "known_issues": [
-    "InteractiveBackground.tsx re-initializes the mesh animation effect whenever mousePos changes (effect depends on mousePos), causing unnecessary teardown/recreate work on every pointer move; mousePos should be stored in a ref or excluded from effect deps.",
-    "InteractiveBackground.tsx can divide by zero when distance === 0 (dx/distance, dy/distance), producing Infinity/NaN and possible rendering artifacts.",
-    "ProfessionalModeContent.tsx queues many setTimeout calls from inside the scroll handler for staggered reveals without cancellation/deduping; fast scrolling can schedule redundant timers and waste work.",
-    "ProfessionalModeContent.tsx defines carouselRefs but does not use them (unused refs / dead code).",
-    "ProfessionalModeContent.tsx uses the same toggle handler on onMouseEnter and onMouseLeave for ecosystem cards, which can cause expand/collapse flicker and conflicts with click toggling.",
-    "useModeSelectorRemeasure.ts depends on the identity of the elementRefs array; if callers pass a new inline array each render, observers can be re-registered unnecessarily.",
-    "backend/blob-storage/Storage.mo uses Nat.sub(currentBalance, reservedCycles) which can trap if currentBalance < reservedCycles.",
-    "backend/blob-storage/Storage.mo traps if env var CAFFFEINE_STORAGE_CASHIER_PRINCIPAL is missing, making deployment/config brittle.",
-    "backend/blob-storage/Mixin.mo stores authorization state in a transient variable (resets on upgrade) and _caffeineStorageUpdateGatewayPrincipals is callable without access control (any caller can trigger refresh).",
-    "backend/blob-storage/Mixin.mo _caffeineStorageCreateCertificate is a placeholder and does not implement real certificate creation/verification."
-  ],
-  "isFixRequest": true,
-  "gameProjectType": "none",
-  "projectName": "Prabhat Chhirolya Creative OS",
+  "projectName": "Fix X (Twitter) OG/Twitter card caching by versioned OG image under /assets and consistent URLs",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }
