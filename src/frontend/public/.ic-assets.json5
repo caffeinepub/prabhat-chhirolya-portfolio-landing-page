@@ -4,6 +4,14 @@
     "ignore": false
   },
   {
+    "match": "assets/ogcard-v3.jpg",
+    "ignore": false,
+    "headers": {
+      "Content-Type": "image/jpeg",
+      "Cache-Control": "public, max-age=31536000, immutable"
+    }
+  },
+  {
     "match": "assets/ogcard-v2.jpg",
     "ignore": false,
     "headers": {

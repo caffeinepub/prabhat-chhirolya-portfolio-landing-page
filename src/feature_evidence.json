@@ -2,8 +2,8 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-add-a-new-versioned-open-graph-image-file-named-ogcard-v2-jpg-and-ensure-it-is-deployed-as-a-direct-static-asset-at-frontend-public-assets-ogcard-v2-jpg-served-without-routing-or-js-handling",
-      "featureTitle": "Add a new versioned Open Graph image file named `ogcard-v2.jpg` and ensure it is deployed as a direct static asset at `frontend/public/assets/ogcard-v2.jpg` (served without routing or JS handling).",
+      "featureId": "feature-re-export-the-uploaded-image-ogcardnew-jpg-into-a-clean-standards-compliant-open-graph-jpeg-rgb-baseline-non-progressive-stripped-metadata-exactly-1200-630-pixels-and-ensure-the-resulting-file-decodes-correctly-in-common-image-viewers",
+      "featureTitle": "Re-export the uploaded image `ogcardnew.jpg` into a clean, standards-compliant Open Graph JPEG: RGB, baseline (non-progressive), stripped metadata, exactly 1200×630 pixels, and ensure the resulting file decodes correctly in common image viewers.",
       "files": [],
       "components": [
         "blob-storage@4.0.0",
@@ -19,27 +19,8 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-update-frontend-index-html-to-replace-all-open-graph-and-twitter-image-meta-tags-to-use-the-exact-absolute-url-https-www-prabhatchhirolya-com-assets-ogcard-v2-jpg-for-og-image-og-image-secure-url-and-twitter-image",
-      "featureTitle": "Update `frontend/index.html` to replace all Open Graph and Twitter image meta tags to use the exact absolute URL `https://www.prabhatchhirolya.com/assets/ogcard-v2.jpg` for `og:image`, `og:image:secure_url`, and `twitter:image`.",
-      "files": [
-        "frontend/index.html"
-      ],
-      "components": [
-        "blob-storage@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-2"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-ensure-url-consistency-across-metadata-by-using-the-exact-trailing-slash-url-https-www-prabhatchhirolya-com-for-the-canonical-link-og-url-and-twitter-url-in-frontend-index-html",
-      "featureTitle": "Ensure URL consistency across metadata by using the exact trailing-slash URL `https://www.prabhatchhirolya.com/` for the canonical link, `og:url`, and `twitter:url` in `frontend/index.html`.",
+      "featureId": "feature-update-frontend-index-html-open-graph-and-twitter-meta-tags-to-reference-the-new-versioned-og-image-url-replace-all-occurrences-of-assets-ogcard-v2-jpg-with-the-new-versioned-filename-keep-existing-canonical-and-url-formatting-unchanged",
+      "featureTitle": "Update `frontend/index.html` Open Graph and Twitter meta tags to reference the new versioned OG image URL (replace all occurrences of `.../assets/ogcard-v2.jpg` with the new versioned filename). Keep existing canonical and URL formatting unchanged.",
       "files": [
         "frontend/index.html"
       ],
@@ -57,8 +38,8 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-update-frontend-public-ic-assets-json5-so-the-new-static-og-image-at-assets-ogcard-v2-jpg-is-explicitly-included-not-ignored-and-served-with-appropriate-headers-at-minimum-correct-content-type-image-jpeg",
-      "featureTitle": "Update `frontend/public/.ic-assets.json5` so the new static OG image at `assets/ogcard-v2.jpg` is explicitly included (not ignored) and served with appropriate headers (at minimum correct `Content-Type: image/jpeg`).",
+      "featureId": "feature-update-frontend-public-ic-assets-json5-to-explicitly-serve-the-new-versioned-og-image-path-with-content-type-image-jpeg-and-appropriate-caching-headers-without-removing-existing-rules-for-older-og-image-filenames",
+      "featureTitle": "Update `frontend/public/.ic-assets.json5` to explicitly serve the new versioned OG image path with `Content-Type: image/jpeg` and appropriate caching headers, without removing existing rules for older OG image filenames.",
       "files": [
         "frontend/public/.ic-assets.json5"
       ],
@@ -76,8 +57,8 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-update-frontend-og-preview-verification-md-to-reference-the-new-og-image-url-path-https-www-prabhatchhirolya-com-assets-ogcard-v2-jpg-instead-of-the-old-ogcard-jpg-including-the-verification-steps-and-deployment-checklist-paths",
-      "featureTitle": "Update `frontend/OG_PREVIEW_VERIFICATION.md` to reference the new OG image URL/path (`https://www.prabhatchhirolya.com/assets/ogcard-v2.jpg`) instead of the old `ogcard.jpg`, including the verification steps and deployment checklist paths.",
+      "featureId": "feature-update-frontend-og-preview-verification-md-to-use-the-new-versioned-og-image-url-in-the-production-urls-to-test-and-troubleshooting-sections",
+      "featureTitle": "Update `frontend/OG_PREVIEW_VERIFICATION.md` to use the new versioned OG image URL in the “Production URLs to Test” and troubleshooting sections.",
       "files": [
         "frontend/OG_PREVIEW_VERIFICATION.md"
       ],

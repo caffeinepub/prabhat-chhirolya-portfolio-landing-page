@@ -1,42 +1,38 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-09T15:16:24.015Z",
+  "generatedAt": "2026-02-09T16:13:15.182Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
     "total": 5,
-    "implemented": 5,
+    "implemented": 4,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Add a new versioned Open Graph image file named `ogcard-v2.jpg` and ensure it is deployed as a direct static asset at `frontend/public/assets/ogcard-v2.jpg` (served without routing or JS handling).",
+        "summary": "Re-export the uploaded image `ogcardnew.jpg` into a clean, standards-compliant Open Graph JPEG: RGB, baseline (non-progressive), stripped metadata, exactly 1200×630 pixels, and ensure the resulting file decodes correctly in common image viewers.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/public/assets/generated/ogcard-v2.jpg.dim_1200x630.jpg",
-          "frontend/public/assets/ogcard-v2.jpg"
+          "frontend/public/assets/generated/ogcard-v3.jpg.dim_1200x630.jpg"
         ],
         "matchedFiles": [
-          "frontend/public/assets/generated/ogcard-v2.jpg.dim_1200x630.jpg",
-          "frontend/public/assets/ogcard-v2.jpg"
+          "frontend/public/assets/generated/ogcard-v3.jpg.dim_1200x630.jpg"
         ]
       },
       {
         "id": "REQ-2",
-        "summary": "Update `frontend/index.html` to replace all Open Graph and Twitter image meta tags to use the exact absolute URL `https://www.prabhatchhirolya.com/assets/ogcard-v2.jpg` for `og:image`, `og:image:secure_url`, and `twitter:image`.",
-        "status": "implemented",
+        "summary": "Deploy the newly exported OG image as a version-bumped static asset under `frontend/public/assets/` using a fresh filename (e.g., `ogcard-v3.jpg`) and ensure the deployed URL returns the exact image bytes (no HTML fallback or truncation).",
+        "status": "missing",
         "plannedFiles": [
-          "frontend/index.html"
+          "frontend/public/assets/ogcard-v3.jpg"
         ],
-        "matchedFiles": [
-          "frontend/index.html"
-        ]
+        "matchedFiles": []
       },
       {
         "id": "REQ-3",
-        "summary": "Ensure URL consistency across metadata by using the exact trailing-slash URL `https://www.prabhatchhirolya.com/` for the canonical link, `og:url`, and `twitter:url` in `frontend/index.html`.",
+        "summary": "Update `frontend/index.html` Open Graph and Twitter meta tags to reference the new versioned OG image URL (replace all occurrences of `.../assets/ogcard-v2.jpg` with the new versioned filename). Keep existing canonical and URL formatting unchanged.",
         "status": "implemented",
         "plannedFiles": [
           "frontend/index.html"
@@ -47,7 +43,7 @@
       },
       {
         "id": "REQ-4",
-        "summary": "Update `frontend/public/.ic-assets.json5` so the new static OG image at `assets/ogcard-v2.jpg` is explicitly included (not ignored) and served with appropriate headers (at minimum correct `Content-Type: image/jpeg`).",
+        "summary": "Update `frontend/public/.ic-assets.json5` to explicitly serve the new versioned OG image path with `Content-Type: image/jpeg` and appropriate caching headers, without removing existing rules for older OG image filenames.",
         "status": "implemented",
         "plannedFiles": [
           "frontend/public/.ic-assets.json5"
@@ -58,7 +54,7 @@
       },
       {
         "id": "REQ-5",
-        "summary": "Update `frontend/OG_PREVIEW_VERIFICATION.md` to reference the new OG image URL/path (`https://www.prabhatchhirolya.com/assets/ogcard-v2.jpg`) instead of the old `ogcard.jpg`, including the verification steps and deployment checklist paths.",
+        "summary": "Update `frontend/OG_PREVIEW_VERIFICATION.md` to use the new versioned OG image URL in the “Production URLs to Test” and troubleshooting sections.",
         "status": "implemented",
         "plannedFiles": [
           "frontend/OG_PREVIEW_VERIFICATION.md"
@@ -77,8 +73,7 @@
     "frontend/OG_PREVIEW_VERIFICATION.md",
     "frontend/index.html",
     "frontend/public/.ic-assets.json5",
-    "frontend/public/assets/generated/ogcard-v2.jpg.dim_1200x630.jpg",
-    "frontend/public/assets/ogcard-v2.jpg",
+    "frontend/public/assets/generated/ogcard-v3.jpg.dim_1200x630.jpg",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

@@ -1,35 +1,45 @@
 {
   "kind": "spec_vs_diff_report",
   "version": "1.0",
-  "generatedAt": "2026-02-09T15:16:24.013Z",
-  "summary": "REQ-2, REQ-3, REQ-4, and REQ-5 appear implemented via updates to frontend/index.html, frontend/public/.ic-assets.json5, and frontend/OG_PREVIEW_VERIFICATION.md. REQ-1 (adding the actual static image file frontend/public/assets/ogcard-v2.jpg) is not evidenced in the diff (no added files shown). The diff also includes substantial unrelated UI/feature work across many frontend/src files and an update to project_state.json, which were not requested by the BuildRequest.",
+  "generatedAt": "2026-02-09T16:13:15.179Z",
+  "summary": "Meta tags, asset header rules, and OG verification docs were updated to reference ogcard-v3.jpg, but the diff summary shows no new image asset added/re-exported. Large unrelated UI/feature changes were also made beyond the OG image fix scope.",
   "missing_requirements": [
     {
       "id": "REQ-1",
-      "requirement": "Add a new versioned Open Graph image file named `ogcard-v2.jpg` and ensure it is deployed as a direct static asset at `frontend/public/assets/ogcard-v2.jpg` (served without routing or JS handling).",
-      "reason": "The diff summary shows no added files, and there is no evidence that `frontend/public/assets/ogcard-v2.jpg` was added to the repository.",
+      "requirement": "Re-export the uploaded image `ogcardnew.jpg` into a clean baseline RGB JPEG (non-progressive), stripped metadata, exactly 1200×630, and ensure it decodes correctly.",
+      "reason": "The diff summary shows no new/added image output file(s) and provides no evidence of an actual re-exported JPEG being produced from `ogcardnew.jpg`.",
       "evidence": [
-        "File diff summary: ADDED FILES: none"
+        "<file-diff>: Added: 0 files",
+        "frontend-file-summaries.txt (no mention of generated/re-exported JPEG being added)"
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "requirement": "Deploy the newly exported OG image as a new versioned static asset under `frontend/public/assets/` (e.g., `ogcard-v3.jpg`).",
+      "reason": "No new file is shown as added (specifically not `frontend/public/assets/ogcard-v3.jpg`), so the version-bumped asset itself is not evidenced as present for deployment.",
+      "evidence": [
+        "<file-diff>: Added: 0 files",
+        "frontend/public/.ic-assets.json5 (rule added, but no corresponding asset file addition is shown)"
       ]
     }
   ],
   "hallucinated_features": [
     {
-      "description": "Large set of unrelated UI/UX and component changes (landing page layout/animations, interactive background system, project card carousel changes, CV download preview behavior, error boundary, new/changed hooks).",
-      "reason": "BuildRequest is narrowly scoped to OG/Twitter metadata and static asset serving; these front-end feature/UI changes are not requested and violate the 'Non-goals: Adding new product features unrelated to OG/Twitter metadata and static asset serving.'",
+      "description": "Extensive landing page/UI rework (mode system, animations, interactive background, project cards, professional/personal content changes, CV thumbnail behavior, etc.).",
+      "reason": "The BuildRequest is narrowly focused on re-exporting/deploying an OG image and updating meta tags/docs; these broader UI/feature changes were not requested and are listed as non-goals (no redesign beyond what is required).",
       "evidence": [
-        "frontend-file-summaries.txt (modified): summaries list modifications to frontend/src/App.tsx, frontend/src/pages/LandingPage.tsx, frontend/src/index.css, frontend/src/components/PersonalModeContent.tsx, frontend/src/components/ProjectCard.tsx, frontend/src/components/ProfessionalModeContent.tsx, frontend/src/components/InteractiveBackground.tsx, frontend/src/hooks/useModeSelectorRemeasure.ts, frontend/src/components/AppErrorBoundary.tsx, etc."
+        "frontend-file-summaries.txt (summaries for frontend/src/App.tsx, frontend/src/pages/LandingPage.tsx, frontend/src/index.css, frontend/src/components/PersonalModeContent.tsx, frontend/src/components/ProjectCard.tsx, frontend/src/components/ProfessionalModeContent.tsx, frontend/src/components/InteractiveBackground.tsx, frontend/src/hooks/useModeSelectorRemeasure.ts, frontend/src/components/AppErrorBoundary.tsx, etc.)"
       ]
     },
     {
-      "description": "Update to project_state.json tracking new_feature_requests/status metadata.",
-      "reason": "BuildRequest does not request changes to project_state.json; it is unrelated to implementing OG image asset + metadata changes.",
+      "description": "Addition of placeholder React Query hook structure (`frontend/src/hooks/useQueries.ts`).",
+      "reason": "Not requested by the BuildRequest; unrelated to OG image re-export/deployment and meta tag updates.",
       "evidence": [
-        "project_state.json (modified)"
+        "frontend-file-summaries.txt (entry for frontend/src/hooks/useQueries.ts)"
       ]
     }
   ],
-  "confidence": 0.73,
+  "confidence": 0.74,
   "changed_files": [
     "frontend-file-summaries.txt",
     "frontend/OG_PREVIEW_VERIFICATION.md",

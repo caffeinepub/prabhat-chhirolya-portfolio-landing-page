@@ -1,115 +1,109 @@
 {
   "kind": "build_request",
-  "title": "Fix X (Twitter) OG/Twitter card caching by versioned OG image under /assets and consistent URLs",
-  "priority": "normal",
+  "title": "Re-export and redeploy OG/Twitter card image from uploaded ogcardnew.jpg (fix invalid/unreachable OG image)",
+  "priority": "high",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Add a new versioned Open Graph image file named `ogcard-v2.jpg` and ensure it is deployed as a direct static asset at `frontend/public/assets/ogcard-v2.jpg` (served without routing or JS handling).",
+      "text": "Re-export the uploaded image `ogcardnew.jpg` into a clean, standards-compliant Open Graph JPEG: RGB, baseline (non-progressive), stripped metadata, exactly 1200×630 pixels, and ensure the resulting file decodes correctly in common image viewers.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-1",
+          "msg-2"
         ],
         "quotes": [
-          "Create a new OG image file with a versioned filename, e.g. ogcard-v2.jpg.",
-          "Place the OG image inside a static public folder: /public/assets/ogcard-v2.jpg",
-          "Ensure the file is served directly (no routing, no JS handling)."
+          "here you go",
+          "the OG Image URL appears to be invalid or unreachable, what should we do now?"
         ]
       },
       "acceptanceCriteria": [
-        "A file exists at `frontend/public/assets/ogcard-v2.jpg` in the repository.",
-        "After deployment, visiting `https://www.prabhatchhirolya.com/assets/ogcard-v2.jpg` returns HTTP 200 and displays the image (not HTML).",
-        "The response includes an appropriate `Content-Type` for a JPEG image."
+        "A new baseline (non-progressive) JPEG at exactly 1200×630 is produced from `ogcardnew.jpg`.",
+        "The exported JPEG opens correctly after download (not blank/corrupt) in at least two viewers (e.g., Chrome + OS image viewer)."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Update `frontend/index.html` to replace all Open Graph and Twitter image meta tags to use the exact absolute URL `https://www.prabhatchhirolya.com/assets/ogcard-v2.jpg` for `og:image`, `og:image:secure_url`, and `twitter:image`.",
+      "text": "Deploy the newly exported OG image as a version-bumped static asset under `frontend/public/assets/` using a fresh filename (e.g., `ogcard-v3.jpg`) and ensure the deployed URL returns the exact image bytes (no HTML fallback or truncation).",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-2"
         ],
         "quotes": [
-          "Replace existing image URLs with the following:\n<meta property=\"og:image\" content=\"https://www.prabhatchhirolya.com/assets/ogcard-v2.jpg\" />\n<meta property=\"og:image:secure_url\" content=\"https://www.prabhatchhirolya.com/assets/ogcard-v2.jpg\" />\n<meta name=\"twitter:image\" content=\"https://www.prabhatchhirolya.com/assets/ogcard-v2.jpg\" />"
+          "the OG Image URL appears to be invalid or unreachable"
         ]
       },
       "acceptanceCriteria": [
-        "`frontend/index.html` contains `og:image` with content `https://www.prabhatchhirolya.com/assets/ogcard-v2.jpg`.",
-        "`frontend/index.html` contains `og:image:secure_url` with content `https://www.prabhatchhirolya.com/assets/ogcard-v2.jpg`.",
-        "`frontend/index.html` contains `twitter:image` with content `https://www.prabhatchhirolya.com/assets/ogcard-v2.jpg`.",
-        "No remaining OG/Twitter image meta tags reference the previous `ogcard.jpg` URL."
+        "A new file exists at `frontend/public/assets/ogcard-v3.jpg` (or equivalent fresh versioned name) and is included in the asset canister deployment.",
+        "Fetching `https://www.prabhatchhirolya.com/assets/ogcard-v3.jpg` returns HTTP 200 and downloads as a valid JPEG (non-zero size, not corrupted)."
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Ensure URL consistency across metadata by using the exact trailing-slash URL `https://www.prabhatchhirolya.com/` for the canonical link, `og:url`, and `twitter:url` in `frontend/index.html`.",
+      "text": "Update `frontend/index.html` Open Graph and Twitter meta tags to reference the new versioned OG image URL (replace all occurrences of `.../assets/ogcard-v2.jpg` with the new versioned filename). Keep existing canonical and URL formatting unchanged.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-2"
         ],
         "quotes": [
-          "Use the exact same URL (with trailing slash) across all tags:\n<link rel=\"canonical\" href=\"https://www.prabhatchhirolya.com/\" />\n<meta property=\"og:url\" content=\"https://www.prabhatchhirolya.com/\" />\n<meta name=\"twitter:url\" content=\"https://www.prabhatchhirolya.com/\" />"
+          "the OG Image URL appears to be invalid or unreachable"
         ]
       },
       "acceptanceCriteria": [
-        "`frontend/index.html` canonical URL is exactly `https://www.prabhatchhirolya.com/`.",
-        "`frontend/index.html` `og:url` is exactly `https://www.prabhatchhirolya.com/`.",
-        "`frontend/index.html` `twitter:url` is exactly `https://www.prabhatchhirolya.com/`."
+        "`frontend/index.html` `og:image`, `og:image:secure_url`, and `twitter:image` all reference `https://www.prabhatchhirolya.com/assets/ogcard-v3.jpg` (or the chosen new versioned filename).",
+        "`og:image:type` remains `image/jpeg`, and width/height meta remain 1200/630."
       ]
     },
     {
       "id": "REQ-4",
-      "text": "Update `frontend/public/.ic-assets.json5` so the new static OG image at `assets/ogcard-v2.jpg` is explicitly included (not ignored) and served with appropriate headers (at minimum correct `Content-Type: image/jpeg`).",
+      "text": "Update `frontend/public/.ic-assets.json5` to explicitly serve the new versioned OG image path with `Content-Type: image/jpeg` and appropriate caching headers, without removing existing rules for older OG image filenames.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-2"
         ],
         "quotes": [
-          "Ensure the file exists at a publicly accessible path before deployment.",
-          "Ensure the file is served directly (no routing, no JS handling)."
+          "the OG Image URL appears to be invalid or unreachable"
         ]
       },
       "acceptanceCriteria": [
-        "`frontend/public/.ic-assets.json5` includes a rule that matches `assets/ogcard-v2.jpg` with `ignore: false`.",
-        "The rule sets `Content-Type` to `image/jpeg` for `assets/ogcard-v2.jpg`.",
-        "After deployment, `https://www.prabhatchhirolya.com/assets/ogcard-v2.jpg` is served as a static asset with the configured headers."
+        "`.ic-assets.json5` contains a non-ignored match rule for `assets/ogcard-v3.jpg` (or the chosen new versioned filename) with `Content-Type: image/jpeg`.",
+        "After deployment, the response headers for the new OG image URL include `Content-Type: image/jpeg`."
       ]
     },
     {
       "id": "REQ-5",
-      "text": "Update `frontend/OG_PREVIEW_VERIFICATION.md` to reference the new OG image URL/path (`https://www.prabhatchhirolya.com/assets/ogcard-v2.jpg`) instead of the old `ogcard.jpg`, including the verification steps and deployment checklist paths.",
+      "text": "Update `frontend/OG_PREVIEW_VERIFICATION.md` to use the new versioned OG image URL in the “Production URLs to Test” and troubleshooting sections.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-1"
+          "msg-2"
         ],
         "quotes": [
-          "our goal is to create functional OG and Twitter card."
+          "the OG Image URL appears to be invalid or unreachable"
         ]
       },
       "acceptanceCriteria": [
-        "The documentation’s “OG card image” URL and any direct-browser test instructions reference `https://www.prabhatchhirolya.com/assets/ogcard-v2.jpg`.",
-        "The deployment checklist references `frontend/public/assets/ogcard-v2.jpg` as the required deployed file location."
+        "`frontend/OG_PREVIEW_VERIFICATION.md` references the new versioned OG image URL everywhere it previously referenced `ogcard-v2.jpg`."
       ]
     }
   ],
   "constraints": [
-    "Do not implement OG/Twitter image serving via React routing or backend endpoints; the image must be a direct static file under `frontend/public/assets/`.",
-    "Do not edit files under `frontend/src/hooks/useInternetIdentity.ts`, `frontend/src/hooks/useInternetIdentity.tsx`, `frontend/src/hooks/useActor.ts`, `frontend/src/main.tsx`, or anything in `frontend/src/components/ui`."
+    "Do not edit files under `frontend/src/hooks/useInternetIdentity.ts`, `frontend/src/hooks/useInternetIdentity.tsx`, `frontend/src/hooks/useActor.ts`, `frontend/src/main.tsx`, or anything in `frontend/src/components/ui`.",
+    "Keep the backend as a single Motoko actor; no new backend services."
   ],
   "nonGoals": [
-    "Guaranteeing immediate cache invalidation on X (Twitter) beyond implementing versioned asset URLs and correct metadata (platform-side caching may still take time).",
-    "Adding new product features unrelated to OG/Twitter metadata and static asset serving."
+    "Redesigning the site UI/UX beyond what is required to fix OG/Twitter card previews.",
+    "Adding new authentication methods or third-party integrations.",
+    "Changing domain configuration in `.well-known/ic-domains` unless required by the OG image fix."
   ],
   "imageRequirements": {
-    "required": [
-      "Open Graph/Twitter card image, 1200×630, JPEG (ogcard-v2.jpg.dim_1200x630.jpg)"
-    ],
-    "edits": []
+    "required": [],
+    "edits": [
+      "Re-export as a clean baseline RGB JPEG (non-progressive), strip metadata, and ensure exact 1200×630 output (ogcardnew.jpg > ogcard-v3.jpg.dim_1200x630.jpg)"
+    ]
   },
   "userProfileUpdate": {
     "goalsToAdd": [],
