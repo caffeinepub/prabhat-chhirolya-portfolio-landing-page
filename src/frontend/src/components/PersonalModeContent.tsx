@@ -1,16 +1,27 @@
-import { useEffect, useRef, useState } from 'react';
-import { Mail, ChevronDown, ChevronUp } from 'lucide-react';
-import ProjectCard from './ProjectCard';
+import { ChevronDown, ChevronUp, Mail } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import {
+  useCuriosities,
+  useHowIThinkItems,
+  usePersonalProjects,
+} from "../hooks/useQueries";
+import ProjectCard from "./ProjectCard";
 
 interface PersonalModeContentProps {
   isFadingOut?: boolean;
 }
 
-export default function PersonalModeContent({ isFadingOut = false }: PersonalModeContentProps) {
+export default function PersonalModeContent({
+  isFadingOut = false,
+}: PersonalModeContentProps) {
   const [scrolled, setScrolled] = useState(false);
   const [showScrollCue, setShowScrollCue] = useState(true);
-  const [isBeliefsSectionExpanded, setIsBeliefsSectionExpanded] = useState(false);
+  const [isBeliefsSectionExpanded, setIsBeliefsSectionExpanded] =
+    useState(false);
   const [isBackgroundLoaded, setIsBackgroundLoaded] = useState(false);
+  const { data: backendProjects } = usePersonalProjects();
+  const { data: backendThoughts } = useHowIThinkItems();
+  const { data: backendCuriosities } = useCuriosities();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const sectionsRef = useRef<(HTMLElement | null)[]>([]);
   const carouselRef = useRef<HTMLDivElement>(null);
@@ -19,7 +30,7 @@ export default function PersonalModeContent({ isFadingOut = false }: PersonalMod
   // Preload background image
   useEffect(() => {
     const img = new Image();
-    img.src = '/assets/generated/personal-mode-background.dim_1920x1080.jpg';
+    img.src = "/assets/generated/personal-mode-background.dim_1920x1080.jpg";
     img.onload = () => {
       setIsBackgroundLoaded(true);
     };
@@ -40,19 +51,19 @@ export default function PersonalModeContent({ isFadingOut = false }: PersonalMod
       }
 
       // Fade in sections on scroll
-      sectionsRef.current.forEach((section) => {
-        if (!section) return;
+      for (const section of sectionsRef.current) {
+        if (!section) continue;
         const rect = section.getBoundingClientRect();
         const windowHeight = window.innerHeight;
-        
+
         if (rect.top < windowHeight * 0.8) {
-          section.classList.add('section-visible');
+          section.classList.add("section-visible");
         }
-      });
+      }
     };
 
-    container.addEventListener('scroll', handleScroll);
-    return () => container.removeEventListener('scroll', handleScroll);
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
   }, [scrolled]);
 
   // Intersection Observer for carousel hint animation
@@ -61,32 +72,32 @@ export default function PersonalModeContent({ isFadingOut = false }: PersonalMod
     if (!carousel) return;
 
     // Check if hint has already been played in this session
-    const hintPlayed = sessionStorage.getItem('carouselHintPlayed');
-    if (hintPlayed === 'true') {
+    const hintPlayed = sessionStorage.getItem("carouselHintPlayed");
+    if (hintPlayed === "true") {
       setHasPlayedCarouselHint(true);
       return;
     }
 
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
+        for (const entry of entries) {
           if (entry.isIntersecting && !hasPlayedCarouselHint) {
             // Trigger the hint animation
-            carousel.classList.add('carousel-hint-active');
+            carousel.classList.add("carousel-hint-active");
             setHasPlayedCarouselHint(true);
-            sessionStorage.setItem('carouselHintPlayed', 'true');
+            sessionStorage.setItem("carouselHintPlayed", "true");
 
             // Remove the class after animation completes
             setTimeout(() => {
-              carousel.classList.remove('carousel-hint-active');
+              carousel.classList.remove("carousel-hint-active");
             }, 600);
           }
-        });
+        }
       },
       {
         threshold: 0.3, // Trigger when 30% of the section is visible
-        rootMargin: '0px',
-      }
+        rootMargin: "0px",
+      },
     );
 
     observer.observe(carousel);
@@ -96,72 +107,98 @@ export default function PersonalModeContent({ isFadingOut = false }: PersonalMod
     };
   }, [hasPlayedCarouselHint]);
 
-  const projects = [
+  const FALLBACK_PROJECTS = [
     {
-      title: 'CivicReport.xyz',
-      description: 'A citizen-first platform that turns everyday civic problems into clear, actionable reports that authorities can\'t ignore. This civic-tech experiment built e2e on the ICP.',
-      thumbnail: '/assets/civicreportthumbnail-2.jpg',
+      title: "CivicReport.xyz",
+      description:
+        "A citizen-first platform that turns everyday civic problems into clear, actionable reports that authorities can't ignore. This civic-tech experiment built e2e on the ICP.",
+      thumbnail: "/assets/civicreportthumbnail-2.jpg",
       details: {
         paragraphs: [
           "CivicReport.xyz is a civic-tech experiment showing how blockchain can empower citizens and hold authorities accountable. Built fully on the Internet Computer, it's a proof-of-concept for decentralized tech in public good.",
-          'Users can report civic issues with location, images, and descriptions—creating an immutable on-chain record—while instantly activating pressure tools like auto-emails to authorities, GPS-tagged leader images, certificates, printable complaints, legal notices, and more.',
-          'By combining on-chain storage with decentralized identity, CivicReport.xyz preserves data integrity without compromising user privacy, demonstrating how Web3 can meaningfully upgrade civic engagement and accountability.',
+          "Users can report civic issues with location, images, and descriptions—creating an immutable on-chain record—while instantly activating pressure tools like auto-emails to authorities, GPS-tagged leader images, certificates, printable complaints, legal notices, and more.",
+          "By combining on-chain storage with decentralized identity, CivicReport.xyz preserves data integrity without compromising user privacy, demonstrating how Web3 can meaningfully upgrade civic engagement and accountability.",
         ],
         images: [
-          '/assets/Civicreport01.jpeg',
-          '/assets/Civicreport02.jpeg',
-          '/assets/Civicreport03.jpeg',
-          '/assets/Civicreport04.jpeg',
-          '/assets/Civicreport05.jpeg',
+          "/assets/Civicreport01.jpeg",
+          "/assets/Civicreport02.jpeg",
+          "/assets/Civicreport03.jpeg",
+          "/assets/Civicreport04.jpeg",
+          "/assets/Civicreport05.jpeg",
         ],
-        liveProjectUrl: 'https://civicreport.xyz',
+        liveProjectUrl: "https://civicreport.xyz",
       },
     },
     {
-      title: 'MANIT BHOPAL : it\'s a feeling',
-      description: 'A cinematic glimpse into the NIT Bhopal (MANIT) campus—capturing its vibe, everyday life, and the diverse event-driven societies that define the overall MANIT experience.',
-      thumbnail: '/assets/manitbhopalthumbnail-2.jpg',
+      title: "MANIT BHOPAL : it's a feeling",
+      description:
+        "A cinematic glimpse into the NIT Bhopal (MANIT) campus—capturing its vibe, everyday life, and the diverse event-driven societies that define the overall MANIT experience.",
+      thumbnail: "/assets/manitbhopalthumbnail-2.jpg",
       details: {
         paragraphs: [
-          'I created this video during my college years while pursuing my architecture degree. I gained so much from my time at MANIT, and this film was my small way of giving back through my creative skills. Made in 2018 during my fourth year, the cinematic campus video features my friends, captures the spirit and slogan of MANIT, and was intended to help new students and their parents experience what the campus feels like—its environment, events, and the vibrant societies MANIT offers.',
+          "I created this video during my college years while pursuing my architecture degree. I gained so much from my time at MANIT, and this film was my small way of giving back through my creative skills. Made in 2018 during my fourth year, the cinematic campus video features my friends, captures the spirit and slogan of MANIT, and was intended to help new students and their parents experience what the campus feels like—its environment, events, and the vibrant societies MANIT offers.",
         ],
-        youtubeUrl: 'https://youtu.be/CfA6EBYuItM?si=ENMJ5YO5yUpTcfbh',
+        youtubeUrl: "https://youtu.be/CfA6EBYuItM?si=ENMJ5YO5yUpTcfbh",
       },
     },
     {
-      title: 'AR Personal Card (Web AR)',
-      description: 'An experimental decentralized personal/Professional Augmented Reality card that blends NFC, WebAR, and Web3 to turn a physical card into an interactive digital identity.',
-      thumbnail: '/assets/arcardthumbna-1.jpg',
+      title: "AR Personal Card (Web AR)",
+      description:
+        "An experimental decentralized personal/Professional Augmented Reality card that blends NFC, WebAR, and Web3 to turn a physical card into an interactive digital identity.",
+      thumbnail: "/assets/arcardthumbna-1.jpg",
       details: {
         paragraphs: [
-          'This project reimagines a personal/business card using NFC, WebAR, and Web3. Instead of being static, the card becomes an interactive digital identity that unlocks rich content beyond what a traditional card can hold.',
-          'The experience starts by scanning a QR code or tapping the card on an NFC-enabled phone, which opens my decentralized website (prabhatchhirolya.x). From there, users can explore my links or enter the AR experience.',
-          'In AR, the phone camera recognizes the physical card and overlays videos, audio, UI, buttons, or 3D elements directly into the real world using image tracking.',
-          'The domain is minted on Ethereum, and the website is hosted on IPFS (Filecoin)—chosen for lower cost, high uptime, full ownership, and future metaverse compatibility.',
+          "This project reimagines a personal/business card using NFC, WebAR, and Web3. Instead of being static, the card becomes an interactive digital identity that unlocks rich content beyond what a traditional card can hold.",
+          "The experience starts by scanning a QR code or tapping the card on an NFC-enabled phone, which opens my decentralized website (prabhatchhirolya.x). From there, users can explore my links or enter the AR experience.",
+          "In AR, the phone camera recognizes the physical card and overlays videos, audio, UI, buttons, or 3D elements directly into the real world using image tracking.",
+          "The domain is minted on Ethereum, and the website is hosted on IPFS (Filecoin)—chosen for lower cost, high uptime, full ownership, and future metaverse compatibility.",
         ],
-        youtubeUrl: 'https://youtu.be/D1sX8BFzGbw?si=IlQLwpUMGlQITOFU',
+        youtubeUrl: "https://youtu.be/D1sX8BFzGbw?si=IlQLwpUMGlQITOFU",
       },
     },
   ];
+  // Map backend projects to UI format, falling back to hardcoded if backend is empty
+  const projects =
+    backendProjects && backendProjects.length > 0
+      ? backendProjects.map((p) => ({
+          title: p.title,
+          description: p.oneLiner,
+          thumbnail: p.thumbnailBlobId
+            ? `https://blob.caffeine.ai/v1/blob/?blob_hash=${encodeURIComponent(p.thumbnailBlobId)}&owner_id=placeholder`
+            : "/assets/civicreportthumbnail-2.jpg",
+          details: {
+            paragraphs: p.description ? [p.description] : [],
+            youtubeUrl: p.youtubeUrl,
+          },
+        }))
+      : FALLBACK_PROJECTS;
 
-  const thoughts = [
-    'I learn best by building first and refining along the way.',
+  const FALLBACK_THOUGHTS = [
+    "I learn best by building first and refining along the way.",
     "I'm drawn to systems that feel obvious only after they exist.",
-    'Tools matter - but clarity of intent matters more.',
-    'I prefer depth over noise and long-term thinking over quick wins.',
-    'I believe the future of design is spatial, collaborative, and AI-augmented.',
+    "Tools matter - but clarity of intent matters more.",
+    "I prefer depth over noise and long-term thinking over quick wins.",
+    "I believe the future of design is spatial, collaborative, and AI-augmented.",
   ];
+  const thoughts =
+    backendThoughts && backendThoughts.length > 0
+      ? backendThoughts.map((t) => t.content)
+      : FALLBACK_THOUGHTS;
 
-  const curiosities = [
-    'XR as a natural interface, not a novelty',
-    'AI as a collaborator in creative and technical work',
-    'On-chain systems for civic and public good',
-    'Designing tools that feel intuitive before they feel powerful',
-    'Bridging architecture, code, and immersive experience',
+  const FALLBACK_CURIOSITIES = [
+    "XR as a natural interface, not a novelty",
+    "AI as a collaborator in creative and technical work",
+    "On-chain systems for civic and public good",
+    "Designing tools that feel intuitive before they feel powerful",
+    "Bridging architecture, code, and immersive experience",
   ];
+  const curiosities =
+    backendCuriosities && backendCuriosities.length > 0
+      ? backendCuriosities.map((c) => c.content)
+      : FALLBACK_CURIOSITIES;
 
   const handleStayInTouch = () => {
-    window.location.href = 'mailto:ar.prabhatchhirolya@gmail.com?subject=hello';
+    window.location.href = "mailto:ar.prabhatchhirolya@gmail.com?subject=hello";
   };
 
   const toggleBeliefsSection = () => {
@@ -169,33 +206,40 @@ export default function PersonalModeContent({ isFadingOut = false }: PersonalMod
   };
 
   return (
-    <div className={`personal-mode-content-container ${isFadingOut ? 'content-fade-out' : 'content-fade-in'}`}>
+    <div
+      className={`personal-mode-content-container ${isFadingOut ? "content-fade-out" : "content-fade-in"}`}
+    >
       <div
         ref={scrollContainerRef}
         className="h-full overflow-y-auto overflow-x-hidden scroll-smooth px-6 sm:px-12 md:px-16 lg:px-24"
       >
         {/* Entry Section with Background Image and Branded Dark Overlay */}
-        <section className={`min-h-[70vh] flex flex-col items-center justify-center text-center relative personal-mode-entry-bg ${isBackgroundLoaded ? 'mode-bg-loaded' : ''}`}>
+        <section
+          className={`min-h-[70vh] flex flex-col items-center justify-center text-center relative personal-mode-entry-bg ${isBackgroundLoaded ? "mode-bg-loaded" : ""}`}
+        >
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-extralight tracking-wide text-foreground mb-6 sm:mb-8 relative z-10">
             Personal Journey
           </h2>
           <p className="max-w-3xl text-sm sm:text-base md:text-lg lg:text-xl font-light tracking-wide text-foreground/70 leading-relaxed mb-8 sm:mb-10 relative z-10">
-            I explore creativity, technology, and systems by building, experimenting, and reflecting - often before there&apos;s a clear outcome.
+            I explore creativity, technology, and systems by building,
+            experimenting, and reflecting - often before there&apos;s a clear
+            outcome.
           </p>
-          
+
           {/* Stay in touch CTA Button with Gradient Glow */}
           <button
+            type="button"
             onClick={handleStayInTouch}
             className="cta-button-glow flex items-center gap-2 px-6 py-3 rounded-lg border border-foreground/15 bg-background/20 backdrop-blur-sm text-sm sm:text-base font-light tracking-wide text-foreground/70 transition-all duration-300 hover:border-foreground/30 hover:bg-background/30 hover:text-foreground hover:scale-105 relative z-10"
           >
             <Mail className="h-4 w-4" />
             Stay in touch
           </button>
-          
+
           {/* Scroll Cue */}
           <div
             className={`absolute bottom-12 left-1/2 -translate-x-1/2 transition-opacity duration-700 z-10 ${
-              showScrollCue ? 'opacity-60' : 'opacity-0'
+              showScrollCue ? "opacity-60" : "opacity-0"
             }`}
           >
             <p className="text-xs sm:text-sm font-light tracking-wider text-foreground/50">
@@ -220,7 +264,7 @@ export default function PersonalModeContent({ isFadingOut = false }: PersonalMod
           <div className="max-w-4xl w-full space-y-6 sm:space-y-8 md:space-y-10">
             {thoughts.map((thought, index) => (
               <p
-                key={index}
+                key={thought}
                 className="text-sm sm:text-base md:text-lg font-light tracking-wide text-foreground/80 leading-relaxed text-center"
                 style={{
                   animationDelay: `${index * 100}ms`,
@@ -243,9 +287,9 @@ export default function PersonalModeContent({ isFadingOut = false }: PersonalMod
             Current Curiosities
           </h3>
           <div className="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-            {curiosities.map((curiosity, index) => (
+            {curiosities.map((curiosity) => (
               <div
-                key={index}
+                key={curiosity}
                 className="p-6 sm:p-8 rounded-lg border border-foreground/10 bg-card/30 backdrop-blur-sm transition-all duration-300 hover:border-foreground/20 hover:bg-card/40"
               >
                 <p className="text-sm sm:text-base md:text-lg font-light tracking-wide text-foreground/80 leading-relaxed">
@@ -269,7 +313,7 @@ export default function PersonalModeContent({ isFadingOut = false }: PersonalMod
           <p className="text-sm sm:text-base md:text-lg font-light tracking-wide text-foreground/60 mb-3 sm:mb-4">
             Built from curiosity, not requirements.
           </p>
-          
+
           {/* Swipe Cue */}
           <div className="mb-8 sm:mb-10">
             <p className="text-xs sm:text-sm font-light tracking-wider text-foreground/40">
@@ -279,10 +323,13 @@ export default function PersonalModeContent({ isFadingOut = false }: PersonalMod
 
           {/* Horizontal Scrollable Carousel with hint animation */}
           <div className="w-full overflow-x-auto overflow-y-hidden scrollbar-hide -mx-6 sm:-mx-12 md:-mx-16 lg:-mx-24 px-6 sm:px-12 md:px-16 lg:px-24">
-            <div ref={carouselRef} className="flex gap-6 sm:gap-8 pb-4 carousel-hint-container">
-              {projects.map((project, index) => (
+            <div
+              ref={carouselRef}
+              className="flex gap-6 sm:gap-8 pb-4 carousel-hint-container"
+            >
+              {projects.map((project) => (
                 <ProjectCard
-                  key={index}
+                  key={project.title}
                   title={project.title}
                   description={project.description}
                   thumbnail={project.thumbnail}
@@ -304,7 +351,9 @@ export default function PersonalModeContent({ isFadingOut = false }: PersonalMod
             A Note
           </h3>
           <p className="max-w-3xl text-base sm:text-lg md:text-xl font-light tracking-wide text-foreground/70 leading-relaxed">
-            I don&apos;t draw a hard line between work and curiosity. Most of my professional projects started as personal experiments. This space exists to capture the thinking before the outcome.
+            I don&apos;t draw a hard line between work and curiosity. Most of my
+            professional projects started as personal experiments. This space
+            exists to capture the thinking before the outcome.
           </p>
         </section>
 
@@ -317,6 +366,7 @@ export default function PersonalModeContent({ isFadingOut = false }: PersonalMod
         >
           {/* Expandable Section Trigger Button */}
           <button
+            type="button"
             onClick={toggleBeliefsSection}
             className="beliefs-trigger-button flex items-center gap-2 px-5 py-2.5 rounded-lg border border-foreground/10 bg-background/10 backdrop-blur-sm text-xs sm:text-sm font-light tracking-wider text-foreground/50 transition-all duration-500 hover:border-foreground/20 hover:bg-background/20 hover:text-foreground/70 mb-8"
           >
@@ -336,7 +386,9 @@ export default function PersonalModeContent({ isFadingOut = false }: PersonalMod
           {/* Expandable Content */}
           <div
             className={`beliefs-expandable-content overflow-hidden transition-all duration-500 ease-out ${
-              isBeliefsSectionExpanded ? 'beliefs-expanded' : 'beliefs-collapsed'
+              isBeliefsSectionExpanded
+                ? "beliefs-expanded"
+                : "beliefs-collapsed"
             }`}
           >
             <div className="beliefs-content-inner max-w-3xl w-full px-4 sm:px-6 md:px-8">
@@ -353,7 +405,11 @@ export default function PersonalModeContent({ isFadingOut = false }: PersonalMod
                     Religious / Philosophical view
                   </h4>
                   <p className="text-sm sm:text-base font-light tracking-wide text-foreground/70 leading-relaxed">
-                    I consider myself an atheist, but I deeply love Buddhist philosophy. In general, I value philosophy over organized religion. I often listen to and feel inspired by Osho, Javed Akhtar, Varun Grover, J. Krishnamurthy, and Acharya Prashant.
+                    I consider myself an atheist, but I deeply love Buddhist
+                    philosophy. In general, I value philosophy over organized
+                    religion. I often listen to and feel inspired by Osho, Javed
+                    Akhtar, Varun Grover, J. Krishnamurthy, and Acharya
+                    Prashant.
                   </p>
                 </div>
 
@@ -363,7 +419,11 @@ export default function PersonalModeContent({ isFadingOut = false }: PersonalMod
                     Political inclination
                   </h4>
                   <p className="text-sm sm:text-base font-light tracking-wide text-foreground/70 leading-relaxed">
-                    I don&apos;t associate myself strictly with the right or left wing. I consider myself liberal and admire political movements that emphasize education, rational thinking, and governance—which is why I resonate most with the Aam Aadmi Party.
+                    I don&apos;t associate myself strictly with the right or
+                    left wing. I consider myself liberal and admire political
+                    movements that emphasize education, rational thinking, and
+                    governance—which is why I resonate most with the Aam Aadmi
+                    Party.
                   </p>
                 </div>
 
@@ -373,7 +433,11 @@ export default function PersonalModeContent({ isFadingOut = false }: PersonalMod
                     Musical taste
                   </h4>
                   <p className="text-sm sm:text-base font-light tracking-wide text-foreground/70 leading-relaxed">
-                    I love indie music. Favorite bands/artists include: When Chai Met Toast, The Local Train, Indian Ocean, Mitraz. I also deeply enjoy Pakistani music, especially Nusrat Fateh Ali Khan, Ghulam Ali Khan, and Atif Aslam. My favorite singer overall is Arijit Singh.
+                    I love indie music. Favorite bands/artists include: When
+                    Chai Met Toast, The Local Train, Indian Ocean, Mitraz. I
+                    also deeply enjoy Pakistani music, especially Nusrat Fateh
+                    Ali Khan, Ghulam Ali Khan, and Atif Aslam. My favorite
+                    singer overall is Arijit Singh.
                   </p>
                 </div>
 
@@ -383,7 +447,9 @@ export default function PersonalModeContent({ isFadingOut = false }: PersonalMod
                     Book taste
                   </h4>
                   <p className="text-sm sm:text-base font-light tracking-wide text-foreground/70 leading-relaxed">
-                    I&apos;m drawn to books on investing, self-improvement, philosophy, economics, and history. Currently reading: <em>The Bitcoin Standard</em>, <em>The Gold Standard</em>.
+                    I&apos;m drawn to books on investing, self-improvement,
+                    philosophy, economics, and history. Currently reading:{" "}
+                    <em>The Bitcoin Standard</em>, <em>The Gold Standard</em>.
                   </p>
                 </div>
 
@@ -393,7 +459,10 @@ export default function PersonalModeContent({ isFadingOut = false }: PersonalMod
                     Other interests
                   </h4>
                   <p className="text-sm sm:text-base font-light tracking-wide text-foreground/70 leading-relaxed">
-                    I love traveling, cinematography, and vibe coding. I have a deep interest in ICP Blockchain, Caffeine AI, Web3, artificial intelligence, personal finance & investing, and the metaverse.
+                    I love traveling, cinematography, and vibe coding. I have a
+                    deep interest in ICP Blockchain, Caffeine AI, Web3,
+                    artificial intelligence, personal finance & investing, and
+                    the metaverse.
                   </p>
                 </div>
               </div>

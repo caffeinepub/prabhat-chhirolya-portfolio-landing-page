@@ -1,15 +1,19 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 
 interface InteractiveBackgroundProps {
   isVisible: boolean;
 }
 
-export default function InteractiveBackground({ isVisible }: InteractiveBackgroundProps) {
+export default function InteractiveBackground({
+  isVisible,
+}: InteractiveBackgroundProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const [mousePos, setMousePos] = useState({ x: -1000, y: -1000 });
   const animationFrameRef = useRef<number | undefined>(undefined);
-  const meshPointsRef = useRef<Array<{ x: number; y: number; baseX: number; baseY: number }>>([]);
+  const meshPointsRef = useRef<
+    Array<{ x: number; y: number; baseX: number; baseY: number }>
+  >([]);
 
   // Track mouse/touch position
   useEffect(() => {
@@ -31,14 +35,14 @@ export default function InteractiveBackground({ isVisible }: InteractiveBackgrou
       setMousePos({ x: -1000, y: -1000 });
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('touchmove', handleTouchMove, { passive: true });
-    window.addEventListener('touchend', handleTouchEnd);
+    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("touchmove", handleTouchMove, { passive: true });
+    window.addEventListener("touchend", handleTouchEnd);
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('touchmove', handleTouchMove);
-      window.removeEventListener('touchend', handleTouchEnd);
+      window.removeEventListener("mousemove", handleMouseMove);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchend", handleTouchEnd);
     };
   }, [isVisible]);
 
@@ -49,14 +53,14 @@ export default function InteractiveBackground({ isVisible }: InteractiveBackgrou
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d', { alpha: true });
+    const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
 
     // Set canvas size
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
-      
+
       // Reinitialize mesh points on resize
       initializeMeshPoints();
     };
@@ -81,14 +85,14 @@ export default function InteractiveBackground({ isVisible }: InteractiveBackgrou
     };
 
     resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener("resize", resizeCanvas);
 
     // Animation loop
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // Draw mesh points with interaction
-      meshPointsRef.current.forEach((point) => {
+      for (const point of meshPointsRef.current) {
         const dx = mousePos.x - point.baseX;
         const dy = mousePos.y - point.baseY;
         const distance = Math.sqrt(dx * dx + dy * dy);
@@ -97,12 +101,12 @@ export default function InteractiveBackground({ isVisible }: InteractiveBackgrou
         // Calculate point properties based on distance to cursor
         let opacity = 0.15;
         let size = 1;
-        
+
         if (distance < maxDistance) {
           const influence = 1 - distance / maxDistance;
           opacity = 0.15 + influence * 0.35; // Brighten near cursor
           size = 1 + influence * 1.5; // Grow near cursor
-          
+
           // Subtle organic movement toward cursor
           const moveAmount = influence * 8;
           point.x = point.baseX + (dx / distance) * moveAmount;
@@ -118,7 +122,7 @@ export default function InteractiveBackground({ isVisible }: InteractiveBackgrou
         ctx.beginPath();
         ctx.arc(point.x, point.y, size, 0, Math.PI * 2);
         ctx.fill();
-      });
+      }
 
       animationFrameRef.current = requestAnimationFrame(animate);
     };
@@ -126,7 +130,7 @@ export default function InteractiveBackground({ isVisible }: InteractiveBackgrou
     animate();
 
     return () => {
-      window.removeEventListener('resize', resizeCanvas);
+      window.removeEventListener("resize", resizeCanvas);
       if (animationFrameRef.current !== undefined) {
         cancelAnimationFrame(animationFrameRef.current);
       }
@@ -138,8 +142,8 @@ export default function InteractiveBackground({ isVisible }: InteractiveBackgrou
     if (!isVisible || !overlayRef.current) return;
 
     const overlay = overlayRef.current;
-    overlay.style.setProperty('--mouse-x', `${mousePos.x}px`);
-    overlay.style.setProperty('--mouse-y', `${mousePos.y}px`);
+    overlay.style.setProperty("--mouse-x", `${mousePos.x}px`);
+    overlay.style.setProperty("--mouse-y", `${mousePos.y}px`);
   }, [mousePos, isVisible]);
 
   if (!isVisible) return null;
@@ -151,9 +155,9 @@ export default function InteractiveBackground({ isVisible }: InteractiveBackgrou
         ref={overlayRef}
         className="interactive-overlay"
         style={{
-          position: 'absolute',
+          position: "absolute",
           inset: 0,
-          pointerEvents: 'none',
+          pointerEvents: "none",
           zIndex: 1,
         }}
       />
@@ -163,9 +167,9 @@ export default function InteractiveBackground({ isVisible }: InteractiveBackgrou
         ref={canvasRef}
         className="mesh-layer"
         style={{
-          position: 'absolute',
+          position: "absolute",
           inset: 0,
-          pointerEvents: 'none',
+          pointerEvents: "none",
           zIndex: 2,
         }}
       />

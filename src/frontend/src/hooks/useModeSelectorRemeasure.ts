@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 /**
  * Hook that triggers a re-measure tick on window resize and element size changes.
@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
  * calculations to re-run without affecting existing transitions/animations.
  */
 export function useModeSelectorRemeasure(
-  elementRefs: Array<React.RefObject<HTMLElement | null>>
+  elementRefs: Array<React.RefObject<HTMLElement | null>>,
 ): number {
   const [remeasureTick, setRemeasureTick] = useState(0);
 
@@ -16,12 +16,12 @@ export function useModeSelectorRemeasure(
       setRemeasureTick((prev) => prev + 1);
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     // Set up ResizeObserver for each element ref
     const observers: ResizeObserver[] = [];
-    
-    elementRefs.forEach((ref) => {
+
+    for (const ref of elementRefs) {
       if (ref.current) {
         const observer = new ResizeObserver(() => {
           setRemeasureTick((prev) => prev + 1);
@@ -29,11 +29,13 @@ export function useModeSelectorRemeasure(
         observer.observe(ref.current);
         observers.push(observer);
       }
-    });
+    }
 
     return () => {
-      window.removeEventListener('resize', handleResize);
-      observers.forEach((observer) => observer.disconnect());
+      window.removeEventListener("resize", handleResize);
+      for (const observer of observers) {
+        observer.disconnect();
+      }
     };
   }, [elementRefs]);
 

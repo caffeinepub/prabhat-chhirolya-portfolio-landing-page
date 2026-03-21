@@ -10,6 +10,57 @@ import type { ActorMethod } from '@icp-sdk/core/agent';
 import type { IDL } from '@icp-sdk/core/candid';
 import type { Principal } from '@icp-sdk/core/principal';
 
+export interface Curiosity {
+  'id' : string,
+  'content' : string,
+  'order' : bigint,
+}
+export interface HowIThinkItem {
+  'id' : string,
+  'content' : string,
+  'order' : bigint,
+}
+export interface JobRole {
+  'id' : string,
+  'title' : string,
+  'responsibilities' : Array<string>,
+  'achievements' : Array<string>,
+  'dateRange' : string,
+}
+export interface Project {
+  'id' : string,
+  'title' : string,
+  'tools' : string,
+  'oneLiner' : string,
+  'order' : bigint,
+  'thumbnailBlobId' : [] | [string],
+  'role' : string,
+  'description' : string,
+  'youtubeUrl' : [] | [string],
+}
+export interface ToolCategory {
+  'id' : string,
+  'tools' : Array<string>,
+  'categoryName' : string,
+  'order' : bigint,
+}
+export interface UserProfile { 'name' : string }
+export type UserRole = { 'admin' : null } |
+  { 'user' : null } |
+  { 'guest' : null };
+export interface WorkCard {
+  'id' : string,
+  'title' : string,
+  'order' : bigint,
+  'description' : string,
+}
+export interface WorkExperience {
+  'id' : string,
+  'order' : bigint,
+  'logoBlobId' : [] | [string],
+  'companyName' : string,
+  'roles' : Array<JobRole>,
+}
 export interface _CaffeineStorageCreateCertificateResult {
   'method' : string,
   'blob_hash' : string,
@@ -37,6 +88,59 @@ export interface _SERVICE {
     _CaffeineStorageRefillResult
   >,
   '_caffeineStorageUpdateGatewayPrincipals' : ActorMethod<[], undefined>,
+  '_initializeAccessControlWithSecret' : ActorMethod<[string], undefined>,
+  'assignCallerUserRole' : ActorMethod<[Principal, UserRole], undefined>,
+  'createCuriosity' : ActorMethod<[Curiosity], undefined>,
+  'createHowIThinkItem' : ActorMethod<[HowIThinkItem], undefined>,
+  'createPersonalProject' : ActorMethod<[Project], undefined>,
+  'createProfessionalProject' : ActorMethod<[Project], undefined>,
+  'createToolCategory' : ActorMethod<[ToolCategory], undefined>,
+  'createWorkCard' : ActorMethod<[WorkCard], undefined>,
+  'createWorkExperience' : ActorMethod<[WorkExperience], undefined>,
+  'deleteCuriosity' : ActorMethod<[string], undefined>,
+  'deleteHowIThinkItem' : ActorMethod<[string], undefined>,
+  'deletePersonalProject' : ActorMethod<[string], undefined>,
+  'deleteProfessionalProject' : ActorMethod<[string], undefined>,
+  'deleteToolCategory' : ActorMethod<[string], undefined>,
+  'deleteWorkCard' : ActorMethod<[string], undefined>,
+  'deleteWorkExperience' : ActorMethod<[string], undefined>,
+  'getCallerUserProfile' : ActorMethod<[], [] | [UserProfile]>,
+  'getCallerUserRole' : ActorMethod<[], UserRole>,
+  'getCuriosities' : ActorMethod<[], Array<Curiosity>>,
+  'getCuriosity' : ActorMethod<[string], [] | [Curiosity]>,
+  'getHowIThinkItem' : ActorMethod<[string], [] | [HowIThinkItem]>,
+  'getHowIThinkItems' : ActorMethod<[], Array<HowIThinkItem>>,
+  'getPersonalProject' : ActorMethod<[string], [] | [Project]>,
+  'getPersonalProjects' : ActorMethod<[], Array<Project>>,
+  'getProfessionalProject' : ActorMethod<[string], [] | [Project]>,
+  'getProfessionalProjects' : ActorMethod<[], Array<Project>>,
+  'getToolCategories' : ActorMethod<[], Array<ToolCategory>>,
+  'getToolCategory' : ActorMethod<[string], [] | [ToolCategory]>,
+  'getUserProfile' : ActorMethod<[Principal], [] | [UserProfile]>,
+  'getWorkCard' : ActorMethod<[string], [] | [WorkCard]>,
+  'getWorkCards' : ActorMethod<[], Array<WorkCard>>,
+  'getWorkExperience' : ActorMethod<[string], [] | [WorkExperience]>,
+  'getWorkExperiences' : ActorMethod<[], Array<WorkExperience>>,
+  'hasAdmin' : ActorMethod<[], boolean>,
+  'claimFirstAdmin' : ActorMethod<[], boolean>,
+  'addAdmin' : ActorMethod<[Principal], undefined>,
+  'removeAdmin' : ActorMethod<[Principal], undefined>,
+  'isCallerAdmin' : ActorMethod<[], boolean>,
+  'reorderCuriosities' : ActorMethod<[Array<string>], undefined>,
+  'reorderHowIThinkItems' : ActorMethod<[Array<string>], undefined>,
+  'reorderPersonalProjects' : ActorMethod<[Array<string>], undefined>,
+  'reorderProfessionalProjects' : ActorMethod<[Array<string>], undefined>,
+  'reorderToolCategories' : ActorMethod<[Array<string>], undefined>,
+  'reorderWorkCards' : ActorMethod<[Array<string>], undefined>,
+  'reorderWorkExperiences' : ActorMethod<[Array<string>], undefined>,
+  'saveCallerUserProfile' : ActorMethod<[UserProfile], undefined>,
+  'updateCuriosity' : ActorMethod<[Curiosity], undefined>,
+  'updateHowIThinkItem' : ActorMethod<[HowIThinkItem], undefined>,
+  'updatePersonalProject' : ActorMethod<[Project], undefined>,
+  'updateProfessionalProject' : ActorMethod<[Project], undefined>,
+  'updateToolCategory' : ActorMethod<[ToolCategory], undefined>,
+  'updateWorkCard' : ActorMethod<[WorkCard], undefined>,
+  'updateWorkExperience' : ActorMethod<[WorkExperience], undefined>,
 }
 export declare const idlService: IDL.ServiceClass;
 export declare const idlInitArgs: IDL.Type[];

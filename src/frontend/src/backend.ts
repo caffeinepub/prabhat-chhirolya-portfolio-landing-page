@@ -89,16 +89,71 @@ export class ExternalBlob {
         return this;
     }
 }
+export interface ToolCategory {
+    id: string;
+    tools: Array<string>;
+    categoryName: string;
+    order: bigint;
+}
+export interface JobRole {
+    id: string;
+    title: string;
+    responsibilities: Array<string>;
+    achievements: Array<string>;
+    dateRange: string;
+}
+export interface HowIThinkItem {
+    id: string;
+    content: string;
+    order: bigint;
+}
+export interface WorkCard {
+    id: string;
+    title: string;
+    order: bigint;
+    description: string;
+}
+export interface WorkExperience {
+    id: string;
+    order: bigint;
+    logoBlobId?: string;
+    companyName: string;
+    roles: Array<JobRole>;
+}
+export interface _CaffeineStorageRefillInformation {
+    proposed_top_up_amount?: bigint;
+}
 export interface _CaffeineStorageCreateCertificateResult {
     method: string;
     blob_hash: string;
+}
+export interface Project {
+    id: string;
+    title: string;
+    tools: string;
+    oneLiner: string;
+    order: bigint;
+    thumbnailBlobId?: string;
+    role: string;
+    description: string;
+    youtubeUrl?: string;
+}
+export interface Curiosity {
+    id: string;
+    content: string;
+    order: bigint;
+}
+export interface UserProfile {
+    name: string;
 }
 export interface _CaffeineStorageRefillResult {
     success?: boolean;
     topped_up_amount?: bigint;
 }
-export interface _CaffeineStorageRefillInformation {
-    proposed_top_up_amount?: bigint;
+export enum UserRole {
+    admin = "admin",
+    user = "user",
+    guest = "guest"
 }
 export interface backendInterface {
     _caffeineStorageBlobIsLive(hash: Uint8Array): Promise<boolean>;
@@ -107,8 +162,61 @@ export interface backendInterface {
     _caffeineStorageCreateCertificate(blobHash: string): Promise<_CaffeineStorageCreateCertificateResult>;
     _caffeineStorageRefillCashier(refillInformation: _CaffeineStorageRefillInformation | null): Promise<_CaffeineStorageRefillResult>;
     _caffeineStorageUpdateGatewayPrincipals(): Promise<void>;
+    _initializeAccessControlWithSecret(userSecret: string): Promise<void>;
+    assignCallerUserRole(user: Principal, role: UserRole): Promise<void>;
+    createCuriosity(curiosity: Curiosity): Promise<void>;
+    createHowIThinkItem(item: HowIThinkItem): Promise<void>;
+    createPersonalProject(project: Project): Promise<void>;
+    createProfessionalProject(project: Project): Promise<void>;
+    createToolCategory(category: ToolCategory): Promise<void>;
+    createWorkCard(card: WorkCard): Promise<void>;
+    createWorkExperience(experience: WorkExperience): Promise<void>;
+    deleteCuriosity(id: string): Promise<void>;
+    deleteHowIThinkItem(id: string): Promise<void>;
+    deletePersonalProject(id: string): Promise<void>;
+    deleteProfessionalProject(id: string): Promise<void>;
+    deleteToolCategory(id: string): Promise<void>;
+    deleteWorkCard(id: string): Promise<void>;
+    deleteWorkExperience(id: string): Promise<void>;
+    getCallerUserProfile(): Promise<UserProfile | null>;
+    getCallerUserRole(): Promise<UserRole>;
+    getCuriosities(): Promise<Array<Curiosity>>;
+    getCuriosity(id: string): Promise<Curiosity | null>;
+    getHowIThinkItem(id: string): Promise<HowIThinkItem | null>;
+    getHowIThinkItems(): Promise<Array<HowIThinkItem>>;
+    getPersonalProject(id: string): Promise<Project | null>;
+    getPersonalProjects(): Promise<Array<Project>>;
+    getProfessionalProject(id: string): Promise<Project | null>;
+    getProfessionalProjects(): Promise<Array<Project>>;
+    getToolCategories(): Promise<Array<ToolCategory>>;
+    getToolCategory(id: string): Promise<ToolCategory | null>;
+    getUserProfile(user: Principal): Promise<UserProfile | null>;
+    getWorkCard(id: string): Promise<WorkCard | null>;
+    getWorkCards(): Promise<Array<WorkCard>>;
+    getWorkExperience(id: string): Promise<WorkExperience | null>;
+    getWorkExperiences(): Promise<Array<WorkExperience>>;
+    isCallerAdmin(): Promise<boolean>;
+    hasAdmin(): Promise<boolean>;
+    claimFirstAdmin(): Promise<boolean>;
+    addAdmin(newAdmin: Principal): Promise<void>;
+    removeAdmin(target: Principal): Promise<void>;
+    reorderCuriosities(newOrder: Array<string>): Promise<void>;
+    reorderHowIThinkItems(newOrder: Array<string>): Promise<void>;
+    reorderPersonalProjects(newOrder: Array<string>): Promise<void>;
+    reorderProfessionalProjects(newOrder: Array<string>): Promise<void>;
+    reorderToolCategories(newOrder: Array<string>): Promise<void>;
+    reorderWorkCards(newOrder: Array<string>): Promise<void>;
+    reorderWorkExperiences(newOrder: Array<string>): Promise<void>;
+    saveCallerUserProfile(profile: UserProfile): Promise<void>;
+    updateCuriosity(curiosity: Curiosity): Promise<void>;
+    updateHowIThinkItem(item: HowIThinkItem): Promise<void>;
+    updatePersonalProject(project: Project): Promise<void>;
+    updateProfessionalProject(project: Project): Promise<void>;
+    updateToolCategory(category: ToolCategory): Promise<void>;
+    updateWorkCard(card: WorkCard): Promise<void>;
+    updateWorkExperience(experience: WorkExperience): Promise<void>;
 }
-import type { _CaffeineStorageRefillInformation as __CaffeineStorageRefillInformation, _CaffeineStorageRefillResult as __CaffeineStorageRefillResult } from "./declarations/backend.did.d.ts";
+import type { Curiosity as _Curiosity, HowIThinkItem as _HowIThinkItem, JobRole as _JobRole, Project as _Project, ToolCategory as _ToolCategory, UserProfile as _UserProfile, UserRole as _UserRole, WorkCard as _WorkCard, WorkExperience as _WorkExperience, _CaffeineStorageRefillInformation as __CaffeineStorageRefillInformation, _CaffeineStorageRefillResult as __CaffeineStorageRefillResult } from "./declarations/backend.did.d.ts";
 export class Backend implements backendInterface {
     constructor(private actor: ActorSubclass<_SERVICE>, private _uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, private _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, private processError?: (error: unknown) => never){}
     async _caffeineStorageBlobIsLive(arg0: Uint8Array): Promise<boolean> {
@@ -195,15 +303,844 @@ export class Backend implements backendInterface {
             return result;
         }
     }
+    async _initializeAccessControlWithSecret(arg0: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor._initializeAccessControlWithSecret(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor._initializeAccessControlWithSecret(arg0);
+            return result;
+        }
+    }
+    async assignCallerUserRole(arg0: Principal, arg1: UserRole): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n8(this._uploadFile, this._downloadFile, arg1));
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.assignCallerUserRole(arg0, to_candid_UserRole_n8(this._uploadFile, this._downloadFile, arg1));
+            return result;
+        }
+    }
+    async createCuriosity(arg0: Curiosity): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.createCuriosity(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.createCuriosity(arg0);
+            return result;
+        }
+    }
+    async createHowIThinkItem(arg0: HowIThinkItem): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.createHowIThinkItem(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.createHowIThinkItem(arg0);
+            return result;
+        }
+    }
+    async createPersonalProject(arg0: Project): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.createPersonalProject(to_candid_Project_n10(this._uploadFile, this._downloadFile, arg0));
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.createPersonalProject(to_candid_Project_n10(this._uploadFile, this._downloadFile, arg0));
+            return result;
+        }
+    }
+    async createProfessionalProject(arg0: Project): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.createProfessionalProject(to_candid_Project_n10(this._uploadFile, this._downloadFile, arg0));
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.createProfessionalProject(to_candid_Project_n10(this._uploadFile, this._downloadFile, arg0));
+            return result;
+        }
+    }
+    async createToolCategory(arg0: ToolCategory): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.createToolCategory(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.createToolCategory(arg0);
+            return result;
+        }
+    }
+    async createWorkCard(arg0: WorkCard): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.createWorkCard(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.createWorkCard(arg0);
+            return result;
+        }
+    }
+    async createWorkExperience(arg0: WorkExperience): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.createWorkExperience(to_candid_WorkExperience_n12(this._uploadFile, this._downloadFile, arg0));
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.createWorkExperience(to_candid_WorkExperience_n12(this._uploadFile, this._downloadFile, arg0));
+            return result;
+        }
+    }
+    async deleteCuriosity(arg0: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.deleteCuriosity(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.deleteCuriosity(arg0);
+            return result;
+        }
+    }
+    async deleteHowIThinkItem(arg0: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.deleteHowIThinkItem(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.deleteHowIThinkItem(arg0);
+            return result;
+        }
+    }
+    async deletePersonalProject(arg0: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.deletePersonalProject(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.deletePersonalProject(arg0);
+            return result;
+        }
+    }
+    async deleteProfessionalProject(arg0: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.deleteProfessionalProject(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.deleteProfessionalProject(arg0);
+            return result;
+        }
+    }
+    async deleteToolCategory(arg0: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.deleteToolCategory(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.deleteToolCategory(arg0);
+            return result;
+        }
+    }
+    async deleteWorkCard(arg0: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.deleteWorkCard(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.deleteWorkCard(arg0);
+            return result;
+        }
+    }
+    async deleteWorkExperience(arg0: string): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.deleteWorkExperience(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.deleteWorkExperience(arg0);
+            return result;
+        }
+    }
+    async getCallerUserProfile(): Promise<UserProfile | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getCallerUserProfile();
+                return from_candid_opt_n14(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getCallerUserProfile();
+            return from_candid_opt_n14(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getCallerUserRole(): Promise<UserRole> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getCallerUserRole();
+                return from_candid_UserRole_n15(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getCallerUserRole();
+            return from_candid_UserRole_n15(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getCuriosities(): Promise<Array<Curiosity>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getCuriosities();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getCuriosities();
+            return result;
+        }
+    }
+    async getCuriosity(arg0: string): Promise<Curiosity | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getCuriosity(arg0);
+                return from_candid_opt_n17(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getCuriosity(arg0);
+            return from_candid_opt_n17(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getHowIThinkItem(arg0: string): Promise<HowIThinkItem | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getHowIThinkItem(arg0);
+                return from_candid_opt_n18(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getHowIThinkItem(arg0);
+            return from_candid_opt_n18(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getHowIThinkItems(): Promise<Array<HowIThinkItem>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getHowIThinkItems();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getHowIThinkItems();
+            return result;
+        }
+    }
+    async getPersonalProject(arg0: string): Promise<Project | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getPersonalProject(arg0);
+                return from_candid_opt_n19(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getPersonalProject(arg0);
+            return from_candid_opt_n19(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getPersonalProjects(): Promise<Array<Project>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getPersonalProjects();
+                return from_candid_vec_n23(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getPersonalProjects();
+            return from_candid_vec_n23(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getProfessionalProject(arg0: string): Promise<Project | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getProfessionalProject(arg0);
+                return from_candid_opt_n19(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getProfessionalProject(arg0);
+            return from_candid_opt_n19(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getProfessionalProjects(): Promise<Array<Project>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getProfessionalProjects();
+                return from_candid_vec_n23(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getProfessionalProjects();
+            return from_candid_vec_n23(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getToolCategories(): Promise<Array<ToolCategory>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getToolCategories();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getToolCategories();
+            return result;
+        }
+    }
+    async getToolCategory(arg0: string): Promise<ToolCategory | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getToolCategory(arg0);
+                return from_candid_opt_n24(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getToolCategory(arg0);
+            return from_candid_opt_n24(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getUserProfile(arg0: Principal): Promise<UserProfile | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getUserProfile(arg0);
+                return from_candid_opt_n14(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getUserProfile(arg0);
+            return from_candid_opt_n14(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getWorkCard(arg0: string): Promise<WorkCard | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getWorkCard(arg0);
+                return from_candid_opt_n25(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getWorkCard(arg0);
+            return from_candid_opt_n25(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getWorkCards(): Promise<Array<WorkCard>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getWorkCards();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getWorkCards();
+            return result;
+        }
+    }
+    async getWorkExperience(arg0: string): Promise<WorkExperience | null> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getWorkExperience(arg0);
+                return from_candid_opt_n26(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getWorkExperience(arg0);
+            return from_candid_opt_n26(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async getWorkExperiences(): Promise<Array<WorkExperience>> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.getWorkExperiences();
+                return from_candid_vec_n29(this._uploadFile, this._downloadFile, result);
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.getWorkExperiences();
+            return from_candid_vec_n29(this._uploadFile, this._downloadFile, result);
+        }
+    }
+    async isCallerAdmin(): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.isCallerAdmin();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.isCallerAdmin();
+            return result;
+        }
+    }
+    async hasAdmin(): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.hasAdmin();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.hasAdmin();
+            return result;
+        }
+    }
+    async claimFirstAdmin(): Promise<boolean> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.claimFirstAdmin();
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.claimFirstAdmin();
+            return result;
+        }
+    }
+    async addAdmin(arg0: Principal): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.addAdmin(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.addAdmin(arg0);
+            return result;
+        }
+    }
+    async removeAdmin(arg0: Principal): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.removeAdmin(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.removeAdmin(arg0);
+            return result;
+        }
+    }
+    async reorderCuriosities(arg0: Array<string>): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.reorderCuriosities(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.reorderCuriosities(arg0);
+            return result;
+        }
+    }
+    async reorderHowIThinkItems(arg0: Array<string>): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.reorderHowIThinkItems(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.reorderHowIThinkItems(arg0);
+            return result;
+        }
+    }
+    async reorderPersonalProjects(arg0: Array<string>): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.reorderPersonalProjects(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.reorderPersonalProjects(arg0);
+            return result;
+        }
+    }
+    async reorderProfessionalProjects(arg0: Array<string>): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.reorderProfessionalProjects(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.reorderProfessionalProjects(arg0);
+            return result;
+        }
+    }
+    async reorderToolCategories(arg0: Array<string>): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.reorderToolCategories(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.reorderToolCategories(arg0);
+            return result;
+        }
+    }
+    async reorderWorkCards(arg0: Array<string>): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.reorderWorkCards(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.reorderWorkCards(arg0);
+            return result;
+        }
+    }
+    async reorderWorkExperiences(arg0: Array<string>): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.reorderWorkExperiences(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.reorderWorkExperiences(arg0);
+            return result;
+        }
+    }
+    async saveCallerUserProfile(arg0: UserProfile): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.saveCallerUserProfile(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.saveCallerUserProfile(arg0);
+            return result;
+        }
+    }
+    async updateCuriosity(arg0: Curiosity): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.updateCuriosity(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.updateCuriosity(arg0);
+            return result;
+        }
+    }
+    async updateHowIThinkItem(arg0: HowIThinkItem): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.updateHowIThinkItem(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.updateHowIThinkItem(arg0);
+            return result;
+        }
+    }
+    async updatePersonalProject(arg0: Project): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.updatePersonalProject(to_candid_Project_n10(this._uploadFile, this._downloadFile, arg0));
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.updatePersonalProject(to_candid_Project_n10(this._uploadFile, this._downloadFile, arg0));
+            return result;
+        }
+    }
+    async updateProfessionalProject(arg0: Project): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.updateProfessionalProject(to_candid_Project_n10(this._uploadFile, this._downloadFile, arg0));
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.updateProfessionalProject(to_candid_Project_n10(this._uploadFile, this._downloadFile, arg0));
+            return result;
+        }
+    }
+    async updateToolCategory(arg0: ToolCategory): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.updateToolCategory(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.updateToolCategory(arg0);
+            return result;
+        }
+    }
+    async updateWorkCard(arg0: WorkCard): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.updateWorkCard(arg0);
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.updateWorkCard(arg0);
+            return result;
+        }
+    }
+    async updateWorkExperience(arg0: WorkExperience): Promise<void> {
+        if (this.processError) {
+            try {
+                const result = await this.actor.updateWorkExperience(to_candid_WorkExperience_n12(this._uploadFile, this._downloadFile, arg0));
+                return result;
+            } catch (e) {
+                this.processError(e);
+                throw new Error("unreachable");
+            }
+        } else {
+            const result = await this.actor.updateWorkExperience(to_candid_WorkExperience_n12(this._uploadFile, this._downloadFile, arg0));
+            return result;
+        }
+    }
+}
+function from_candid_Project_n20(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _Project): Project {
+    return from_candid_record_n21(_uploadFile, _downloadFile, value);
+}
+function from_candid_UserRole_n15(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _UserRole): UserRole {
+    return from_candid_variant_n16(_uploadFile, _downloadFile, value);
+}
+function from_candid_WorkExperience_n27(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _WorkExperience): WorkExperience {
+    return from_candid_record_n28(_uploadFile, _downloadFile, value);
 }
 function from_candid__CaffeineStorageRefillResult_n4(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: __CaffeineStorageRefillResult): _CaffeineStorageRefillResult {
     return from_candid_record_n5(_uploadFile, _downloadFile, value);
+}
+function from_candid_opt_n14(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_UserProfile]): UserProfile | null {
+    return value.length === 0 ? null : value[0];
+}
+function from_candid_opt_n17(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_Curiosity]): Curiosity | null {
+    return value.length === 0 ? null : value[0];
+}
+function from_candid_opt_n18(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_HowIThinkItem]): HowIThinkItem | null {
+    return value.length === 0 ? null : value[0];
+}
+function from_candid_opt_n19(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_Project]): Project | null {
+    return value.length === 0 ? null : from_candid_Project_n20(_uploadFile, _downloadFile, value[0]);
+}
+function from_candid_opt_n22(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [string]): string | null {
+    return value.length === 0 ? null : value[0];
+}
+function from_candid_opt_n24(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_ToolCategory]): ToolCategory | null {
+    return value.length === 0 ? null : value[0];
+}
+function from_candid_opt_n25(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_WorkCard]): WorkCard | null {
+    return value.length === 0 ? null : value[0];
+}
+function from_candid_opt_n26(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [_WorkExperience]): WorkExperience | null {
+    return value.length === 0 ? null : from_candid_WorkExperience_n27(_uploadFile, _downloadFile, value[0]);
 }
 function from_candid_opt_n6(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [boolean]): boolean | null {
     return value.length === 0 ? null : value[0];
 }
 function from_candid_opt_n7(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: [] | [bigint]): bigint | null {
     return value.length === 0 ? null : value[0];
+}
+function from_candid_record_n21(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    id: string;
+    title: string;
+    tools: string;
+    oneLiner: string;
+    order: bigint;
+    thumbnailBlobId: [] | [string];
+    role: string;
+    description: string;
+    youtubeUrl: [] | [string];
+}): {
+    id: string;
+    title: string;
+    tools: string;
+    oneLiner: string;
+    order: bigint;
+    thumbnailBlobId?: string;
+    role: string;
+    description: string;
+    youtubeUrl?: string;
+} {
+    return {
+        id: value.id,
+        title: value.title,
+        tools: value.tools,
+        oneLiner: value.oneLiner,
+        order: value.order,
+        thumbnailBlobId: record_opt_to_undefined(from_candid_opt_n22(_uploadFile, _downloadFile, value.thumbnailBlobId)),
+        role: value.role,
+        description: value.description,
+        youtubeUrl: record_opt_to_undefined(from_candid_opt_n22(_uploadFile, _downloadFile, value.youtubeUrl))
+    };
+}
+function from_candid_record_n28(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    id: string;
+    order: bigint;
+    logoBlobId: [] | [string];
+    companyName: string;
+    roles: Array<_JobRole>;
+}): {
+    id: string;
+    order: bigint;
+    logoBlobId?: string;
+    companyName: string;
+    roles: Array<JobRole>;
+} {
+    return {
+        id: value.id,
+        order: value.order,
+        logoBlobId: record_opt_to_undefined(from_candid_opt_n22(_uploadFile, _downloadFile, value.logoBlobId)),
+        companyName: value.companyName,
+        roles: value.roles
+    };
 }
 function from_candid_record_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     success: [] | [boolean];
@@ -217,11 +1154,89 @@ function from_candid_record_n5(_uploadFile: (file: ExternalBlob) => Promise<Uint
         topped_up_amount: record_opt_to_undefined(from_candid_opt_n7(_uploadFile, _downloadFile, value.topped_up_amount))
     };
 }
+function from_candid_variant_n16(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    admin: null;
+} | {
+    user: null;
+} | {
+    guest: null;
+}): UserRole {
+    return "admin" in value ? UserRole.admin : "user" in value ? UserRole.user : "guest" in value ? UserRole.guest : value;
+}
+function from_candid_vec_n23(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_Project>): Array<Project> {
+    return value.map((x)=>from_candid_Project_n20(_uploadFile, _downloadFile, x));
+}
+function from_candid_vec_n29(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Array<_WorkExperience>): Array<WorkExperience> {
+    return value.map((x)=>from_candid_WorkExperience_n27(_uploadFile, _downloadFile, x));
+}
+function to_candid_Project_n10(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: Project): _Project {
+    return to_candid_record_n11(_uploadFile, _downloadFile, value);
+}
+function to_candid_UserRole_n8(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: UserRole): _UserRole {
+    return to_candid_variant_n9(_uploadFile, _downloadFile, value);
+}
+function to_candid_WorkExperience_n12(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: WorkExperience): _WorkExperience {
+    return to_candid_record_n13(_uploadFile, _downloadFile, value);
+}
 function to_candid__CaffeineStorageRefillInformation_n2(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _CaffeineStorageRefillInformation): __CaffeineStorageRefillInformation {
     return to_candid_record_n3(_uploadFile, _downloadFile, value);
 }
 function to_candid_opt_n1(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: _CaffeineStorageRefillInformation | null): [] | [__CaffeineStorageRefillInformation] {
     return value === null ? candid_none() : candid_some(to_candid__CaffeineStorageRefillInformation_n2(_uploadFile, _downloadFile, value));
+}
+function to_candid_record_n11(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    id: string;
+    title: string;
+    tools: string;
+    oneLiner: string;
+    order: bigint;
+    thumbnailBlobId?: string;
+    role: string;
+    description: string;
+    youtubeUrl?: string;
+}): {
+    id: string;
+    title: string;
+    tools: string;
+    oneLiner: string;
+    order: bigint;
+    thumbnailBlobId: [] | [string];
+    role: string;
+    description: string;
+    youtubeUrl: [] | [string];
+} {
+    return {
+        id: value.id,
+        title: value.title,
+        tools: value.tools,
+        oneLiner: value.oneLiner,
+        order: value.order,
+        thumbnailBlobId: value.thumbnailBlobId ? candid_some(value.thumbnailBlobId) : candid_none(),
+        role: value.role,
+        description: value.description,
+        youtubeUrl: value.youtubeUrl ? candid_some(value.youtubeUrl) : candid_none()
+    };
+}
+function to_candid_record_n13(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
+    id: string;
+    order: bigint;
+    logoBlobId?: string;
+    companyName: string;
+    roles: Array<JobRole>;
+}): {
+    id: string;
+    order: bigint;
+    logoBlobId: [] | [string];
+    companyName: string;
+    roles: Array<_JobRole>;
+} {
+    return {
+        id: value.id,
+        order: value.order,
+        logoBlobId: value.logoBlobId ? candid_some(value.logoBlobId) : candid_none(),
+        companyName: value.companyName,
+        roles: value.roles
+    };
 }
 function to_candid_record_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: {
     proposed_top_up_amount?: bigint;
@@ -231,6 +1246,21 @@ function to_candid_record_n3(_uploadFile: (file: ExternalBlob) => Promise<Uint8A
     return {
         proposed_top_up_amount: value.proposed_top_up_amount ? candid_some(value.proposed_top_up_amount) : candid_none()
     };
+}
+function to_candid_variant_n9(_uploadFile: (file: ExternalBlob) => Promise<Uint8Array>, _downloadFile: (file: Uint8Array) => Promise<ExternalBlob>, value: UserRole): {
+    admin: null;
+} | {
+    user: null;
+} | {
+    guest: null;
+} {
+    return value == UserRole.admin ? {
+        admin: null
+    } : value == UserRole.user ? {
+        user: null
+    } : value == UserRole.guest ? {
+        guest: null
+    } : value;
 }
 export interface CreateActorOptions {
     agent?: Agent;

@@ -19,6 +19,59 @@ export const _CaffeineStorageRefillResult = IDL.Record({
   'success' : IDL.Opt(IDL.Bool),
   'topped_up_amount' : IDL.Opt(IDL.Nat),
 });
+export const UserRole = IDL.Variant({
+  'admin' : IDL.Null,
+  'user' : IDL.Null,
+  'guest' : IDL.Null,
+});
+export const Curiosity = IDL.Record({
+  'id' : IDL.Text,
+  'content' : IDL.Text,
+  'order' : IDL.Nat,
+});
+export const HowIThinkItem = IDL.Record({
+  'id' : IDL.Text,
+  'content' : IDL.Text,
+  'order' : IDL.Nat,
+});
+export const Project = IDL.Record({
+  'id' : IDL.Text,
+  'title' : IDL.Text,
+  'tools' : IDL.Text,
+  'oneLiner' : IDL.Text,
+  'order' : IDL.Nat,
+  'thumbnailBlobId' : IDL.Opt(IDL.Text),
+  'role' : IDL.Text,
+  'description' : IDL.Text,
+  'youtubeUrl' : IDL.Opt(IDL.Text),
+});
+export const ToolCategory = IDL.Record({
+  'id' : IDL.Text,
+  'tools' : IDL.Vec(IDL.Text),
+  'categoryName' : IDL.Text,
+  'order' : IDL.Nat,
+});
+export const WorkCard = IDL.Record({
+  'id' : IDL.Text,
+  'title' : IDL.Text,
+  'order' : IDL.Nat,
+  'description' : IDL.Text,
+});
+export const JobRole = IDL.Record({
+  'id' : IDL.Text,
+  'title' : IDL.Text,
+  'responsibilities' : IDL.Vec(IDL.Text),
+  'achievements' : IDL.Vec(IDL.Text),
+  'dateRange' : IDL.Text,
+});
+export const WorkExperience = IDL.Record({
+  'id' : IDL.Text,
+  'order' : IDL.Nat,
+  'logoBlobId' : IDL.Opt(IDL.Text),
+  'companyName' : IDL.Text,
+  'roles' : IDL.Vec(JobRole),
+});
+export const UserProfile = IDL.Record({ 'name' : IDL.Text });
 
 export const idlService = IDL.Service({
   '_caffeineStorageBlobIsLive' : IDL.Func(
@@ -47,6 +100,71 @@ export const idlService = IDL.Service({
       [],
     ),
   '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
+  '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+  'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+  'createCuriosity' : IDL.Func([Curiosity], [], []),
+  'createHowIThinkItem' : IDL.Func([HowIThinkItem], [], []),
+  'createPersonalProject' : IDL.Func([Project], [], []),
+  'createProfessionalProject' : IDL.Func([Project], [], []),
+  'createToolCategory' : IDL.Func([ToolCategory], [], []),
+  'createWorkCard' : IDL.Func([WorkCard], [], []),
+  'createWorkExperience' : IDL.Func([WorkExperience], [], []),
+  'deleteCuriosity' : IDL.Func([IDL.Text], [], []),
+  'deleteHowIThinkItem' : IDL.Func([IDL.Text], [], []),
+  'deletePersonalProject' : IDL.Func([IDL.Text], [], []),
+  'deleteProfessionalProject' : IDL.Func([IDL.Text], [], []),
+  'deleteToolCategory' : IDL.Func([IDL.Text], [], []),
+  'deleteWorkCard' : IDL.Func([IDL.Text], [], []),
+  'deleteWorkExperience' : IDL.Func([IDL.Text], [], []),
+  'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
+  'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+  'getCuriosities' : IDL.Func([], [IDL.Vec(Curiosity)], ['query']),
+  'getCuriosity' : IDL.Func([IDL.Text], [IDL.Opt(Curiosity)], ['query']),
+  'getHowIThinkItem' : IDL.Func(
+      [IDL.Text],
+      [IDL.Opt(HowIThinkItem)],
+      ['query'],
+    ),
+  'getHowIThinkItems' : IDL.Func([], [IDL.Vec(HowIThinkItem)], ['query']),
+  'getPersonalProject' : IDL.Func([IDL.Text], [IDL.Opt(Project)], ['query']),
+  'getPersonalProjects' : IDL.Func([], [IDL.Vec(Project)], ['query']),
+  'getProfessionalProject' : IDL.Func(
+      [IDL.Text],
+      [IDL.Opt(Project)],
+      ['query'],
+    ),
+  'getProfessionalProjects' : IDL.Func([], [IDL.Vec(Project)], ['query']),
+  'getToolCategories' : IDL.Func([], [IDL.Vec(ToolCategory)], ['query']),
+  'getToolCategory' : IDL.Func([IDL.Text], [IDL.Opt(ToolCategory)], ['query']),
+  'getUserProfile' : IDL.Func(
+      [IDL.Principal],
+      [IDL.Opt(UserProfile)],
+      ['query'],
+    ),
+  'getWorkCard' : IDL.Func([IDL.Text], [IDL.Opt(WorkCard)], ['query']),
+  'getWorkCards' : IDL.Func([], [IDL.Vec(WorkCard)], ['query']),
+  'getWorkExperience' : IDL.Func(
+      [IDL.Text],
+      [IDL.Opt(WorkExperience)],
+      ['query'],
+    ),
+  'getWorkExperiences' : IDL.Func([], [IDL.Vec(WorkExperience)], ['query']),
+  'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+  'reorderCuriosities' : IDL.Func([IDL.Vec(IDL.Text)], [], []),
+  'reorderHowIThinkItems' : IDL.Func([IDL.Vec(IDL.Text)], [], []),
+  'reorderPersonalProjects' : IDL.Func([IDL.Vec(IDL.Text)], [], []),
+  'reorderProfessionalProjects' : IDL.Func([IDL.Vec(IDL.Text)], [], []),
+  'reorderToolCategories' : IDL.Func([IDL.Vec(IDL.Text)], [], []),
+  'reorderWorkCards' : IDL.Func([IDL.Vec(IDL.Text)], [], []),
+  'reorderWorkExperiences' : IDL.Func([IDL.Vec(IDL.Text)], [], []),
+  'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+  'updateCuriosity' : IDL.Func([Curiosity], [], []),
+  'updateHowIThinkItem' : IDL.Func([HowIThinkItem], [], []),
+  'updatePersonalProject' : IDL.Func([Project], [], []),
+  'updateProfessionalProject' : IDL.Func([Project], [], []),
+  'updateToolCategory' : IDL.Func([ToolCategory], [], []),
+  'updateWorkCard' : IDL.Func([WorkCard], [], []),
+  'updateWorkExperience' : IDL.Func([WorkExperience], [], []),
 });
 
 export const idlInitArgs = [];
@@ -63,6 +181,59 @@ export const idlFactory = ({ IDL }) => {
     'success' : IDL.Opt(IDL.Bool),
     'topped_up_amount' : IDL.Opt(IDL.Nat),
   });
+  const UserRole = IDL.Variant({
+    'admin' : IDL.Null,
+    'user' : IDL.Null,
+    'guest' : IDL.Null,
+  });
+  const Curiosity = IDL.Record({
+    'id' : IDL.Text,
+    'content' : IDL.Text,
+    'order' : IDL.Nat,
+  });
+  const HowIThinkItem = IDL.Record({
+    'id' : IDL.Text,
+    'content' : IDL.Text,
+    'order' : IDL.Nat,
+  });
+  const Project = IDL.Record({
+    'id' : IDL.Text,
+    'title' : IDL.Text,
+    'tools' : IDL.Text,
+    'oneLiner' : IDL.Text,
+    'order' : IDL.Nat,
+    'thumbnailBlobId' : IDL.Opt(IDL.Text),
+    'role' : IDL.Text,
+    'description' : IDL.Text,
+    'youtubeUrl' : IDL.Opt(IDL.Text),
+  });
+  const ToolCategory = IDL.Record({
+    'id' : IDL.Text,
+    'tools' : IDL.Vec(IDL.Text),
+    'categoryName' : IDL.Text,
+    'order' : IDL.Nat,
+  });
+  const WorkCard = IDL.Record({
+    'id' : IDL.Text,
+    'title' : IDL.Text,
+    'order' : IDL.Nat,
+    'description' : IDL.Text,
+  });
+  const JobRole = IDL.Record({
+    'id' : IDL.Text,
+    'title' : IDL.Text,
+    'responsibilities' : IDL.Vec(IDL.Text),
+    'achievements' : IDL.Vec(IDL.Text),
+    'dateRange' : IDL.Text,
+  });
+  const WorkExperience = IDL.Record({
+    'id' : IDL.Text,
+    'order' : IDL.Nat,
+    'logoBlobId' : IDL.Opt(IDL.Text),
+    'companyName' : IDL.Text,
+    'roles' : IDL.Vec(JobRole),
+  });
+  const UserProfile = IDL.Record({ 'name' : IDL.Text });
   
   return IDL.Service({
     '_caffeineStorageBlobIsLive' : IDL.Func(
@@ -91,6 +262,75 @@ export const idlFactory = ({ IDL }) => {
         [],
       ),
     '_caffeineStorageUpdateGatewayPrincipals' : IDL.Func([], [], []),
+    '_initializeAccessControlWithSecret' : IDL.Func([IDL.Text], [], []),
+    'assignCallerUserRole' : IDL.Func([IDL.Principal, UserRole], [], []),
+    'createCuriosity' : IDL.Func([Curiosity], [], []),
+    'createHowIThinkItem' : IDL.Func([HowIThinkItem], [], []),
+    'createPersonalProject' : IDL.Func([Project], [], []),
+    'createProfessionalProject' : IDL.Func([Project], [], []),
+    'createToolCategory' : IDL.Func([ToolCategory], [], []),
+    'createWorkCard' : IDL.Func([WorkCard], [], []),
+    'createWorkExperience' : IDL.Func([WorkExperience], [], []),
+    'deleteCuriosity' : IDL.Func([IDL.Text], [], []),
+    'deleteHowIThinkItem' : IDL.Func([IDL.Text], [], []),
+    'deletePersonalProject' : IDL.Func([IDL.Text], [], []),
+    'deleteProfessionalProject' : IDL.Func([IDL.Text], [], []),
+    'deleteToolCategory' : IDL.Func([IDL.Text], [], []),
+    'deleteWorkCard' : IDL.Func([IDL.Text], [], []),
+    'deleteWorkExperience' : IDL.Func([IDL.Text], [], []),
+    'getCallerUserProfile' : IDL.Func([], [IDL.Opt(UserProfile)], ['query']),
+    'getCallerUserRole' : IDL.Func([], [UserRole], ['query']),
+    'getCuriosities' : IDL.Func([], [IDL.Vec(Curiosity)], ['query']),
+    'getCuriosity' : IDL.Func([IDL.Text], [IDL.Opt(Curiosity)], ['query']),
+    'getHowIThinkItem' : IDL.Func(
+        [IDL.Text],
+        [IDL.Opt(HowIThinkItem)],
+        ['query'],
+      ),
+    'getHowIThinkItems' : IDL.Func([], [IDL.Vec(HowIThinkItem)], ['query']),
+    'getPersonalProject' : IDL.Func([IDL.Text], [IDL.Opt(Project)], ['query']),
+    'getPersonalProjects' : IDL.Func([], [IDL.Vec(Project)], ['query']),
+    'getProfessionalProject' : IDL.Func(
+        [IDL.Text],
+        [IDL.Opt(Project)],
+        ['query'],
+      ),
+    'getProfessionalProjects' : IDL.Func([], [IDL.Vec(Project)], ['query']),
+    'getToolCategories' : IDL.Func([], [IDL.Vec(ToolCategory)], ['query']),
+    'getToolCategory' : IDL.Func(
+        [IDL.Text],
+        [IDL.Opt(ToolCategory)],
+        ['query'],
+      ),
+    'getUserProfile' : IDL.Func(
+        [IDL.Principal],
+        [IDL.Opt(UserProfile)],
+        ['query'],
+      ),
+    'getWorkCard' : IDL.Func([IDL.Text], [IDL.Opt(WorkCard)], ['query']),
+    'getWorkCards' : IDL.Func([], [IDL.Vec(WorkCard)], ['query']),
+    'getWorkExperience' : IDL.Func(
+        [IDL.Text],
+        [IDL.Opt(WorkExperience)],
+        ['query'],
+      ),
+    'getWorkExperiences' : IDL.Func([], [IDL.Vec(WorkExperience)], ['query']),
+    'isCallerAdmin' : IDL.Func([], [IDL.Bool], ['query']),
+    'reorderCuriosities' : IDL.Func([IDL.Vec(IDL.Text)], [], []),
+    'reorderHowIThinkItems' : IDL.Func([IDL.Vec(IDL.Text)], [], []),
+    'reorderPersonalProjects' : IDL.Func([IDL.Vec(IDL.Text)], [], []),
+    'reorderProfessionalProjects' : IDL.Func([IDL.Vec(IDL.Text)], [], []),
+    'reorderToolCategories' : IDL.Func([IDL.Vec(IDL.Text)], [], []),
+    'reorderWorkCards' : IDL.Func([IDL.Vec(IDL.Text)], [], []),
+    'reorderWorkExperiences' : IDL.Func([IDL.Vec(IDL.Text)], [], []),
+    'saveCallerUserProfile' : IDL.Func([UserProfile], [], []),
+    'updateCuriosity' : IDL.Func([Curiosity], [], []),
+    'updateHowIThinkItem' : IDL.Func([HowIThinkItem], [], []),
+    'updatePersonalProject' : IDL.Func([Project], [], []),
+    'updateProfessionalProject' : IDL.Func([Project], [], []),
+    'updateToolCategory' : IDL.Func([ToolCategory], [], []),
+    'updateWorkCard' : IDL.Func([WorkCard], [], []),
+    'updateWorkExperience' : IDL.Func([WorkExperience], [], []),
   });
 };
 
